@@ -449,10 +449,16 @@ def main():
             if st.button("🔄 Reset Skor", use_container_width=True):
                 if 'matrix_data' in st.session_state:
                     del st.session_state.matrix_data
+                if 'last_matched_features' in st.session_state:
+                    del st.session_state.last_matched_features
                 st.rerun()
         
         # Default matrix dengan skor realistis
-        if 'matrix_data' not in st.session_state:
+        # Reset jika matched_features berubah
+        if 'matrix_data' not in st.session_state or \
+           'last_matched_features' not in st.session_state or \
+           st.session_state.last_matched_features != matched_features:
+            
             default_matrix = []
             
             for strategy in STRATEGIES:
@@ -517,8 +523,16 @@ def main():
                 index=STRATEGIES,
                 columns=matched_features
             )
+            st.session_state.last_matched_features = matched_features
         
         matrix_input = st.session_state.matrix_data.copy()
+        
+        # VALIDASI: Pastikan kolom matrix_input sama dengan matched_features
+        if set(matrix_input.columns) != set(matched_features):
+            st.warning("⚠️ Detected feature mismatch. Resetting scores...")
+            del st.session_state.matrix_data
+            del st.session_state.last_matched_features
+            st.rerun()
         
         # Input UI - Gunakan tabs untuk setiap strategi
         tabs = st.tabs([f"**{s.split(':')[0]}**" for s in STRATEGIES])
