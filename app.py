@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 import streamlit as st
+from rapidfuzz import fuzz, process
 
 # ==============================================================================
 # FUNGSI TOPSIS
@@ -116,20 +117,146 @@ def get_feature_metadata() -> Dict[str, Dict]:
         'ConsistentQuality': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Kualitas konsisten'},
     }
 
-def map_dataset_to_features(df: pd.DataFrame, model_features: List[str], min_features: int = 5) -> Tuple[bool, str, List[str], int]:
+def map_dataset_to_features(df: pd.DataFrame, model_features: List[str], min_features: int = 5
+                           ) -> Tuple[bool, str, List[str], int, dict, pd.DataFrame]:
     """
-    Map kolom dataset ke features model
-    Returns: (is_valid, message, matched_features, num_matched)
+    Smart Mapping:
+    - exact match
+    - synonym
+    - fuzzy match
+    - derived features
+
+    Return:
+    - is_valid
+    - message
+    - matched_features (mapped columns)
+    - num_matched
+    - mapping_detail (dict: model_feature -> dataset_column)
+    - df_final (dataset setelah mapping)
     """
-    matched_features = [f for f in model_features if f in df.columns]
+
+    df = df.copy()
+
+    # -------------------------------------------------
+    # Normalisasi nama kolom
+    # -------------------------------------------------
+    def normalize(col):
+        return col.lower().replace("_", "").replace("-", "")
+
+    df_norm = {normalize(c): c for c in df.columns}
+
+    # -------------------------------------------------
+    # Sinonim
+    # -------------------------------------------------
+    synonyms = {
+        "waittime": ["waitingtime", "waiting_time", "queuetime", "wait"],
+        "income": ["salary", "earning", "monthlyincome", "pendapatan"],
+        "averagespend": ["avgspend", "spending", "amountspent", "moneyspent"],
+        "visitfrequency": ["visitcount", "numvisit", "freqvisit"],
+        "groupsize": ["pax", "guestcount", "peoplecount"],
+        "totalrating": ["overallrating", "ratingtotal"],
+        "foodrating": ["ratingfood"],
+        "servicerating": ["ratingservice"],
+        "ambiancerating": ["ratingambiance", "ratingenvironment"],
+    }
+
+    mapping_detail = {}
+    matched_features = []
+    missing_features = []
+
+    # -------------------------------------------------
+    # SMART MATCHING
+    # -------------------------------------------------
+    for feat in model_features:
+        f_norm = normalize(feat)
+
+        # 1) exact match
+        if f_norm in df_norm:
+            col = df_norm[f_norm]
+            mapping_detail[feat] = col
+            matched_features.append(col)
+            continue
+
+        # 2) synonym match
+        if f_norm in synonyms:
+            for syn in synonyms[f_norm]:
+                syn_norm = normalize(syn)
+                if syn_norm in df_norm:
+                    col = df_norm[syn_norm]
+                    mapping_detail[feat] = col
+                    matched_features.append(col)
+                    break
+            if feat in mapping_detail:
+                continue
+        
+        # 3) fuzzy match
+        best_match, score = process.extractOne(
+            f_norm, df_norm.keys(), scorer=fuzz.token_sort_ratio
+        )
+        if score >= 75:
+            col = df_norm[best_match]
+            mapping_detail[feat] = col
+            matched_features.append(col)
+            continue
+
+        # 4) fitur tidak ketemu
+        missing_features.append(feat)
+
+    # -------------------------------------------------
+    # FITUR TURUNAN
+    # -------------------------------------------------
+    derived = {}
+
+    # SpendPerPerson
+    if "TotalSpend" in df.columns and "GroupSize" in df.columns:
+        df["SpendPerPerson"] = df["TotalSpend"] / df["GroupSize"]
+        derived["SpendPerPerson"] = ["TotalSpend", "GroupSize"]
+        if "SpendPerPerson" in model_features:
+            mapping_detail["SpendPerPerson"] = "SpendPerPerson"
+            matched_features.append("SpendPerPerson")
+
+    # SpendToIncomeRatio
+    if "AverageSpend" in df.columns and "Income" in df.columns:
+        df["SpendToIncomeRatio"] = df["AverageSpend"] / df["Income"]
+        derived["SpendToIncomeRatio"] = ["AverageSpend", "Income"]
+        if "SpendToIncomeRatio" in model_features:
+            mapping_detail["SpendToIncomeRatio"] = "SpendToIncomeRatio"
+            matched_features.append("SpendToIncomeRatio")
+
+    # Rating aggregates
+    rating_cols = ["ServiceRating", "FoodRating", "AmbianceRating"]
+    if all(col in df.columns for col in rating_cols):
+        df["AvgRating"] = df[rating_cols].mean(axis=1)
+        df["TotalRating"] = df[rating_cols].sum(axis=1)
+        df["RatingStd"] = df[rating_cols].std(axis=1)
+        for new_feat in ["AvgRating", "TotalRating", "RatingStd"]:
+            if new_feat in model_features:
+                mapping_detail[new_feat] = new_feat
+                matched_features.append(new_feat)
+        derived["RatingDerived"] = rating_cols
+
+    # -------------------------------------------------
+    # FINAL FEATURE SET
+    # -------------------------------------------------
+    matched_features = list(dict.fromkeys(matched_features))  # remove duplicates
     num_matched = len(matched_features)
-    
+
+    df_final = df[[col for col in matched_features if col in df.columns]]
+
+    # -------------------------------------------------
+    # VALIDATOR
+    # -------------------------------------------------
     if num_matched < min_features:
-        message = f"❌ Dataset terlalu umum. Hanya {num_matched} dari {len(model_features)} features yang teridentifikasi. Minimal {min_features} features diperlukan."
-        return False, message, matched_features, num_matched
-    else:
-        message = f"✅ Dataset valid! {num_matched} features teridentifikasi dari {len(model_features)} features model."
-        return True, message, matched_features, num_matched
+        message = (
+            f"❌ Dataset terlalu umum. "
+            f"Hanya {num_matched}/{len(model_features)} fitur yang cocok."
+        )
+        return False, message, matched_features, num_matched, mapping_detail, df_final
+
+    message = (
+        f"✅ Dataset valid! {num_matched}/{len(model_features)} fitur berhasil di-map."
+    )
+    return True, message, matched_features, num_matched, mapping_detail, df_final
 
 def get_feature_weights(model, feature_names: List[str], matched_features: List[str]) -> Dict[str, float]:
     """
