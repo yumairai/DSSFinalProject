@@ -1,10 +1,7 @@
 streamlit
 pandas
 numpy
-matplotlib
-seaborn
-scikit-learn
-xgboost
-scipy
 joblib
 rapidfuzz
+fuzzywuzzy
+python-Levenshtein
