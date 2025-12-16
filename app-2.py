@@ -2249,6 +2249,32 @@ def main():
     # ==============================================================================
     # SIDEBAR - NAVIGATION & INFO
     # ==============================================================================
+    st.markdown("""
+    <style>
+    /* Sidebar background (opsional, kalau gelap) */
+    section[data-testid="stSidebar"] {
+        background-color: #1e1e2f;
+    }
+
+    /* Radio group di sidebar */
+    section[data-testid="stSidebar"] div[role="radiogroup"] label span {
+        color: white !important;
+        font-size: 16px;
+    }
+
+    /* Hover effect */
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:hover span {
+        color: #ffd700 !important;
+    }
+
+    /* Radio yang terpilih */
+    section[data-testid="stSidebar"] div[role="radiogroup"] input:checked + span {
+        color: #00e5ff !important;
+        font-weight: 600;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     with st.sidebar:
         st.markdown("""
         <div style='text-align: center; padding: 20px;'>
