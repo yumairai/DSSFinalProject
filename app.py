@@ -44,8 +44,8 @@ def main():
         
         # Navigation
         page = st.radio(
-            "📍 Navigation",
-            ["🏠 Home", "📖 User Guide", "📊 Analysis Dashboard", "ℹ️ About"],
+            "Navigation",
+            ["Home", "User Guide", "Analisis Dashboard", "About"],
             label_visibility="collapsed"
         )
         
@@ -56,7 +56,7 @@ def main():
             st.markdown("""
             <div style='background: rgba(255,255,255,0.1); padding: 15px; 
                         border-radius: 10px; color: white;'>
-                <h4>📈 Quick Stats</h4>
+                <h4>Quick Stats</h4>
             </div>
             """, unsafe_allow_html=True)
             
@@ -81,7 +81,7 @@ def main():
     # ==============================================================================
     
     # HOME PAGE
-    if page == "🏠 Home":
+    if page == "Home":
         # Header
         st.markdown("""
         <div style='text-align: center; padding: 40px 0;'>
@@ -170,7 +170,7 @@ def main():
                 # Download example
                 csv_example = example_df.to_csv(index=False)
                 st.download_button(
-                    "📥 Download Contoh Dataset",
+                    "Download Contoh Dataset",
                     csv_example,
                     "example_dataset.csv",
                     "text/csv"
@@ -183,15 +183,15 @@ def main():
             df = pd.read_csv(uploaded_file, sep=None, engine="python")
             st.session_state.df = df
 
-            st.success("✅ Dataset berhasil dimuat!")
+            st.success("Dataset berhasil dimuat!")
 
         except Exception as e:
-            st.error(f"❌ Error membaca file CSV: {e}")
+            st.error(f"Error membaca file CSV: {e}")
             st.stop()
 
 
 
-        with st.expander("👁️ Preview Dataset", expanded=True):
+        with st.expander("Preview Dataset", expanded=True):
             st.dataframe(
                 df.head(10),
                 use_container_width=True
@@ -225,10 +225,10 @@ def main():
         model, feature_names = load_model_features("model_satisfied_v2.pkl", "feature_names.pkl")
         
         if model is None or feature_names is None:
-            st.error("❌ Model tidak dapat dimuat. Pastikan file model tersedia.")
+            st.error("Model tidak dapat dimuat. Pastikan file model tersedia.")
             st.stop()
         
-        with st.spinner("🔄 Sedang melakukan mapping features..."):
+        with st.spinner("Sedang melakukan mapping features..."):
             MIN_FEATURES = 5
             is_valid, message, matched_features, num_matched, mapping_detail, df_final = map_dataset_to_features(
                 df, feature_names, MIN_FEATURES
@@ -244,28 +244,24 @@ def main():
             create_metric_card(
                 "Total Features Model",
                 f"{len(feature_names)}",
-                icon="🎯"
             )
         
         with col2:
             create_metric_card(
                 "Features Matched",
                 f"{num_matched}",
-                icon="✅"
             )
         
         with col3:
             match_rate = (num_matched / len(feature_names) * 100)
-            icon = "🎉" if match_rate >= 50 else "⚠️" if match_rate >= 30 else "❌"
             create_metric_card(
                 "Match Rate",
                 f"{match_rate:.1f}%",
-                icon=icon
             )
         
         if not is_valid:
             st.error("""
-            ❌ **Dataset tidak memenuhi kriteria minimum!**
+            **Dataset tidak memenuhi kriteria minimum!**
             
             Dataset Anda hanya memiliki {} features yang cocok, minimal {} features diperlukan.
             
@@ -279,7 +275,7 @@ def main():
         st.success(message)
         
         # Detail mapping per kategori
-        with st.expander("📊 Detail Mapping per Kategori", expanded=True):
+        with st.expander("Detail Mapping per Kategori", expanded=True):
             feature_metadata = get_feature_metadata()
             
             categories = {}
@@ -361,7 +357,7 @@ def main():
                 ))
                 
                 fig.update_layout(
-                    title=f"🏆 Top {top_n} Most Important Features",
+                    title=f"Top {top_n} Most Important Features",
                     xaxis_title="Normalized Importance",
                     yaxis_title="Features",
                     height=500,
@@ -400,7 +396,7 @@ def main():
             feature_importance_dict = matched_importances.to_dict()
             
         except Exception as e:
-            st.error(f"❌ Error menganalisis feature importance: {str(e)}")
+            st.error(f"Error menganalisis feature importance: {str(e)}")
             st.stop()
         
         st.markdown("<br>", unsafe_allow_html=True)
@@ -421,7 +417,7 @@ def main():
         
         strategy_mapping = get_strategy_feature_mapping()
         
-        with st.spinner("🔄 Menghitung ranking strategi..."):
+        with st.spinner("Menghitung ranking strategi..."):
             decision_matrix, weights, criteria_types = build_topsis_matrix(
                 list(matched_importances.index),
                 feature_importance_dict,
@@ -429,7 +425,7 @@ def main():
             )
         
         if decision_matrix is None:
-            st.error("❌ Tidak ada strategi yang cocok dengan features yang terdeteksi.")
+            st.error("Tidak ada strategi yang cocok dengan features yang terdeteksi.")
             st.stop()
         
         col1, col2, col3 = st.columns(3)
@@ -438,21 +434,18 @@ def main():
             create_metric_card(
                 "Total Strategi",
                 f"{len(decision_matrix)}",
-                icon="🎯"
             )
         
         with col2:
             create_metric_card(
                 "Kriteria Evaluasi",
                 f"{len(weights)}",
-                icon="📊"
             )
         
         with col3:
             create_metric_card(
                 "Features Analyzed",
                 f"{num_matched}",
-                icon="✅"
             )
         
         # Calculate TOPSIS
@@ -464,7 +457,7 @@ def main():
             
             # Visualization
             st.markdown("""
-            <h3 style='color: #667eea;'>📈 Ranking Strategi</h3>
+            <h3 style='color: #667eea;'>Ranking Strategi</h3>
             """, unsafe_allow_html=True)
             
             import plotly.graph_objects as go
@@ -488,7 +481,7 @@ def main():
             ))
             
             fig.update_layout(
-                title="🏆 Top 10 Strategi Rekomendasi",
+                title="Top 10 Strategi Rekomendasi",
                 xaxis_title="Closeness Score (semakin tinggi semakin baik)",
                 yaxis_title="",
                 height=600,
@@ -502,7 +495,7 @@ def main():
             # TOP 3 RECOMMENDATIONS dengan style yang lebih menarik
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
-            <h3 style='color: #667eea;'>🏆 Top 3 Rekomendasi Strategi Terbaik</h3>
+            <h3 style='color: #667eea;'>Top 3 Rekomendasi Strategi Terbaik</h3>
             <p style='color: #6b7280;'>Strategi-strategi ini paling cocok dengan profil pelanggan Anda</p>
             """, unsafe_allow_html=True)
             
@@ -532,10 +525,10 @@ def main():
                         """, unsafe_allow_html=True)
                     
                     with col2:
-                        st.markdown("#### 📋 Deskripsi Strategi")
+                        st.markdown("#### Deskripsi Strategi")
                         st.info(strategy_mapping[strategy]['description'])
                         
-                        st.markdown("#### 🎯 Langkah Implementasi")
+                        st.markdown("#### Langkah Implementasi")
                         implementation_steps = strategy_mapping[strategy]['implementation']
                         
                         for step_idx, step in enumerate(implementation_steps, 1):
@@ -547,7 +540,7 @@ def main():
                             </div>
                             """, unsafe_allow_html=True)
                         
-                        st.markdown("#### 📊 Features yang Relevan")
+                        st.markdown("#### Features yang Relevan")
                         strategy_features = strategy_mapping[strategy]['features']
                         matched_strategy_features = {f: w for f, w in strategy_features.items() 
                                                     if f in matched_importances.index}
@@ -570,7 +563,7 @@ def main():
                             )
         
         except Exception as e:
-            st.error(f"❌ Error menghitung TOPSIS: {str(e)}")
+            st.error(f"Error menghitung TOPSIS: {str(e)}")
             st.stop()
         
         st.markdown("<br>", unsafe_allow_html=True)
@@ -602,7 +595,7 @@ def main():
                 
                 csv_topsis = topsis_results.to_csv()
                 st.download_button(
-                    "⬇️ Download CSV",
+                    "⬇Download CSV",
                     csv_topsis,
                     "topsis_results.csv",
                     "text/csv",
@@ -620,7 +613,7 @@ def main():
                 
                 csv_matrix = decision_matrix.to_csv()
                 st.download_button(
-                    "⬇️ Download CSV",
+                    "Download CSV",
                     csv_matrix,
                     "decision_matrix.csv",
                     "text/csv",
@@ -642,7 +635,7 @@ def main():
                 ])
                 csv_mapping = mapping_df.to_csv(index=False)
                 st.download_button(
-                    "⬇️ Download CSV",
+                    "Download CSV",
                     csv_mapping,
                     "feature_mapping.csv",
                     "text/csv",
@@ -652,17 +645,17 @@ def main():
     # ==============================================================================
     # USER GUIDE PAGE
     # ==============================================================================
-    elif page == "📖 User Guide":
+    elif page == "User Guide":
         st.markdown("<br>", unsafe_allow_html=True)
         show_user_guide()
     
     # ==============================================================================
     # ANALYSIS DASHBOARD PAGE
     # ==============================================================================
-    elif page == "📊 Analysis Dashboard":
+    elif page == "Analisis Dashboard":
         st.markdown("""
         <div style='text-align: center; padding: 40px 0;'>
-            <h1 style='font-size: 48px;'>📊 Analysis Dashboard</h1>
+            <h1 style='font-size: 48px;'>Analisis Dashboard</h1>
             <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
                 Summary lengkap dari hasil analisis
             </p>
@@ -670,14 +663,14 @@ def main():
         """, unsafe_allow_html=True)
         
         if 'df' not in st.session_state:
-            st.warning("⚠️ Belum ada data yang di-upload. Silakan upload dataset terlebih dahulu di halaman Home.")
+            st.warning("Belum ada data yang di-upload. Silakan upload dataset terlebih dahulu di halaman Home.")
             st.stop()
         
         # Summary Statistics
         st.markdown("""
         <div style='background: white; padding: 30px; border-radius: 15px; 
                     box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-            <h2 style='color: #667eea;'>📈 Summary Statistics</h2>
+            <h2 style='color: #667eea;'>Summary Statistics</h2>
         </div>
         """, unsafe_allow_html=True)
         
@@ -686,20 +679,20 @@ def main():
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            create_metric_card("Total Records", f"{len(df):,}", icon="📊")
+            create_metric_card("Total Records", f"{len(df):,}")
         
         with col2:
-            create_metric_card("Total Columns", f"{len(df.columns)}", icon="📋")
+            create_metric_card("Total Columns", f"{len(df.columns)}")
         
         with col3:
             if 'num_matched' in st.session_state:
-                create_metric_card("Matched Features", f"{st.session_state.num_matched}", icon="✅")
+                create_metric_card("Matched Features", f"{st.session_state.num_matched}")
             else:
-                create_metric_card("Matched Features", "N/A", icon="❓")
+                create_metric_card("Matched Features", "N/A")
         
         with col4:
             missing_pct = (df.isnull().sum().sum() / (len(df) * len(df.columns)) * 100)
-            create_metric_card("Missing Data", f"{missing_pct:.1f}%", icon="⚠️")
+            create_metric_card("Missing Data", f"{missing_pct:.1f}%")
         
         # Data Quality Check
         st.markdown("<br>", unsafe_allow_html=True)
@@ -728,7 +721,7 @@ def main():
                     use_container_width=True
                 )
             else:
-                st.success("✅ Tidak ada missing values!")
+                st.success("Tidak ada missing values!")
         
         with col2:
             st.markdown("#### Data Types")
@@ -751,13 +744,13 @@ def main():
         
         # Descriptive Statistics
         st.markdown("<br>", unsafe_allow_html=True)
-        with st.expander("📊 Descriptive Statistics", expanded=False):
+        with st.expander("Descriptive Statistics", expanded=False):
             st.dataframe(df.describe(), use_container_width=True)
     
     # ==============================================================================
     # ABOUT PAGE
     # ==============================================================================
-    elif page == "ℹ️ About":
+    elif page == "About":
         st.markdown("<br>", unsafe_allow_html=True)
         show_about()
 
