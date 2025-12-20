@@ -11,8 +11,10 @@ def calculate_topsis(decision_matrix: pd.DataFrame,
     if not np.isclose(sum(weights), 1.0):
         weights = np.array(weights) / sum(weights)
     
-    X = decision_matrix.values
-    R = X / np.sqrt((X**2).sum(axis=0))
+    X = np.nan_to_num(decision_matrix.values, nan=0.0)
+    denominator = np.sqrt((X ** 2).sum(axis=0))
+    denominator[denominator == 0] = 1e-9
+    R = X / denominator
     V = R * np.array(weights)
     
     A_plus = np.zeros(V.shape[1])
