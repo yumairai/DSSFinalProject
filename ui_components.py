@@ -180,6 +180,7 @@ def create_metric_card(label, value, delta=None):
         unsafe_allow_html=True
     )
 
+
 def show_user_guide():
     st.markdown("""
     <div style="
