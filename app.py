@@ -138,8 +138,8 @@ def main():
             
             with col2:
                 st.markdown("""
-                <div style='background: #fff6d6; border-left: 4px solid #ffc20f; color: #000000; solid #ffc20f; padding: 20px; border-radius: 10px; '>
-                    <strong style='color: #667eea;'>💡 Tips:</strong><br>
+                <div style='background: #fff6d6; border-left: 4px solid #ffc20f; color: #000000; padding: 20px; border-radius: 10px; '>
+                    <strong style='color: #000000;'>💡 Tips:</strong><br>
                     <ul style='color: #4b5563; font-size: 14px; margin-top: 10px;'>
                         <li>Format: CSV</li>
                         <li>Minimal 5 kolom match</li>
@@ -191,8 +191,6 @@ def main():
             st.error(f"Error membaca file CSV: {e}")
             st.stop()
 
-
-
         with st.expander("Preview Dataset", expanded=True):
             st.dataframe(
                 df.head(10),
@@ -209,7 +207,6 @@ def main():
                 unsafe_allow_html=True
             )
 
-        
         # ==============================================================================
         # STEP 2: MAPPING FEATURES
         # ==============================================================================
@@ -239,7 +236,6 @@ def main():
         st.session_state.num_matched = num_matched
         st.session_state.mapping_done = True
         
-        # Show mapping results
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
@@ -276,7 +272,6 @@ def main():
         
         st.success(message)
         
-        # Detail mapping per kategori
         with st.expander("Detail Mapping per Kategori", expanded=True):
             feature_metadata = get_feature_metadata()
             
@@ -299,7 +294,6 @@ def main():
                         'Description': feature_metadata[model_feat]['desc']
                     })
             
-            # Tampilkan dengan tabs
             cat_tabs = st.tabs(list(categories.keys()))
             
             for tab, (cat_name, features) in zip(cat_tabs, categories.items()):
@@ -350,9 +344,8 @@ def main():
                     orientation='h',
                     marker=dict(
                         color=top_features.values,
-                        colorscale='Viridis',
-                        showscale=True,
-                        colorbar=dict(title="Importance")
+                        colorscale=[[0, PRIMARY], [1, PRIMARY]],
+                        showscale=False
                     ),
                     text=[f'{v:.1%}' for v in top_features.values],
                     textposition='auto'
@@ -372,8 +365,8 @@ def main():
             
             with col2:
                 st.markdown("""
-                <div style='background: #f8f9ff; padding: 20px; border-radius: 10px;'>
-                    <h4 style='color: #667eea;'>💡 Insight</h4>
+                <div style='background: #fff6d6; padding: 20px; border-radius: 10px;'>
+                    <h4 style='color: #000000;'>💡 Insight</h4>
                     <p style='color: #4b5563; font-size: 14px; line-height: 1.6;'>
                         Feature dengan importance tertinggi adalah faktor yang paling 
                         mempengaruhi kepuasan pelanggan di restoran Anda.
@@ -387,7 +380,7 @@ def main():
                     st.markdown(f"""
                     <div style='background: white; padding: 15px; border-radius: 8px; 
                                 margin-bottom: 10px; border-left: 4px solid #ffc20f;'>
-                        <strong style='color: #667eea;'>#{idx} {feat}</strong><br>
+                        <strong style='color: #000000;'>#{idx} {feat}</strong><br>
                         <span style='color: #10b981; font-size: 18px; font-weight: bold;'>
                             {imp:.1%}
                         </span>
@@ -450,16 +443,14 @@ def main():
                 f"{num_matched}",
             )
         
-        # Calculate TOPSIS
         try:
             topsis_results = calculate_topsis(decision_matrix, weights, criteria_types)
             st.session_state.results_done = True
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Visualization
             st.markdown("""
-            <h3 style='color: #667eea;'>Ranking Strategi</h3>
+            <h3 style='color: #000000;'>Ranking Strategi</h3>
             """, unsafe_allow_html=True)
             
             import plotly.graph_objects as go
@@ -468,7 +459,7 @@ def main():
             
             fig = go.Figure()
             
-            colors = ['#10b981' if i < 3 else '#667eea' for i in range(len(topsis_sorted))]
+            colors = [PRIMARY if i < 3 else "#000000" for i in range(len(topsis_sorted))]
             
             fig.add_trace(go.Bar(
                 x=topsis_sorted['Closeness_Score'],
@@ -494,17 +485,16 @@ def main():
             
             st.plotly_chart(fig, use_container_width=True)
             
-            # TOP 3 RECOMMENDATIONS dengan style yang lebih menarik
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
-            <h3 style='color: #667eea;'>Top 3 Rekomendasi Strategi Terbaik</h3>
+            <h3 style='color: #000000;'>Top 3 Rekomendasi Strategi Terbaik</h3>
             <p style='color: #6b7280;'>Strategi-strategi ini paling cocok dengan profil pelanggan Anda</p>
             """, unsafe_allow_html=True)
             
             top_3 = topsis_results.head(3)
             
             medals = ["🥇", "🥈", "🥉"]
-            colors_top = ["#ffd700", "#c0c0c0", "#cd7f32"]
+            colors_top = [PRIMARY, "#000000", "#6b7280"]
             
             for idx, ((strategy, row), medal, color) in enumerate(zip(top_3.iterrows(), medals, colors_top)):
                 with st.expander(f"{medal} Rank {idx+1}: {strategy}", expanded=(idx==0)):
@@ -528,17 +518,22 @@ def main():
                     
                     with col2:
                         st.markdown("#### Deskripsi Strategi")
-                        st.info(strategy_mapping[strategy]['description'])
+                        st.markdown(f"""
+                            <div style='background: #f3f3f3; padding: 10px; border-radius: 5px; 
+                                        margin-bottom: 8px; border-left: 3px solid #000000;'> 
+                                        {strategy_mapping[strategy]['description']}
+                            </div>
+                            """, unsafe_allow_html=True)                        
                         
                         st.markdown("#### Langkah Implementasi")
                         implementation_steps = strategy_mapping[strategy]['implementation']
                         
                         for step_idx, step in enumerate(implementation_steps, 1):
                             st.markdown(f"""
-                            <div style='background: #f8f9ff; padding: 10px; border-radius: 5px; 
-                                        margin-bottom: 8px; border-left: 3px solid #667eea;'>
-                                <strong style='color: #667eea;'>{step_idx}.</strong> 
-                                <span style='color: #4b5563;'>{step}</span>
+                            <div style='background: #f3f3f3; padding: 10px; border-radius: 5px; 
+                                        margin-bottom: 8px; border-left: 3px solid #000000;'>
+                                <strong style='color: #000000;'>{step_idx}.</strong> 
+                                <span style='color: #000000;'>{step}</span>
                             </div>
                             """, unsafe_allow_html=True)
                         
@@ -590,14 +585,14 @@ def main():
                 st.markdown("""
                 <div style='background: #f0f9ff; padding: 20px; border-radius: 10px; text-align: center;'>
                     <div style='font-size: 48px; margin-bottom: 10px;'></div>
-                    <h4 style='color: #667eea;'>TOPSIS Results</h4>
+                    <h4 style='color: #000000;'>TOPSIS Results</h4>
                     <p style='color: #6b7280; font-size: 14px;'>Ranking lengkap semua strategi</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 csv_topsis = topsis_results.to_csv()
                 st.download_button(
-                    "⬇Download CSV",
+                    "Download CSV",
                     csv_topsis,
                     "topsis_results.csv",
                     "text/csv",
@@ -658,7 +653,7 @@ def main():
         st.markdown("""
         <div style='text-align: center; padding: 40px 0;'>
             <h1 style='font-size: 48px;'>Analisis Dashboard</h1>
-            <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
+            <p style='font-size: 20px; color: color:#6b7280;;'>
                 Summary lengkap dari hasil analisis
             </p>
         </div>

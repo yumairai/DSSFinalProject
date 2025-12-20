@@ -171,7 +171,7 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
         ]
     },
         
-            "A4: Menu Sehat Senior": {
+    "A4: Menu Sehat Senior": {
         'features': {
             'Age': 0.20,
             'SeniorCustomer': 0.20,
@@ -289,7 +289,7 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
 
         # ========== B. STRATEGI BERBASIS PENDAPATAN ==========
         
-            "B1: VIP Membership Elite": {
+    "B1: VIP Membership Elite": {
         'features': {
             'Income': 0.25,
             'HighIncome': 0.20,
@@ -505,8 +505,8 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
 
         # ========== C. STRATEGI BERBASIS KEBIASAAN KUNJUNGAN ==========
         
-        "C1: Loyalty Stamp Card": {
-            'features': {
+    "C1: Loyalty Stamp Card": {
+        'features': {
             'VisitFrequency': 0.25,
             'FrequentVisitor': 0.20,
             'LoyalCustomer': 0.15,

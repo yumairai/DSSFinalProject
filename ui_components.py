@@ -232,8 +232,6 @@ def show_user_guide():
     </div>
     """, unsafe_allow_html=True)
 
-
-
 def show_summary_stats(df, num_matched, total_features):
     """Tampilkan summary statistics dalam card"""
     col1, col2, col3, col4 = st.columns(4)
