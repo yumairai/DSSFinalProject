@@ -155,20 +155,29 @@ def create_metric_card(label, value, delta=None):
         color = "#16a34a" if delta > 0 else "#dc2626"
         delta_html = f"<div style='color:{color}; font-size:14px;'>▲ {delta}</div>"
 
-    st.markdown(f"""
-    <div style="
-        background:#ffffff;
-        padding:22px;
-        border-radius:16px;
-        border-top:5px solid #ffc20f;
-        box-shadow:0 6px 16px rgba(0,0,0,0.12);
-        text-align:center;
-    ">
-        <div style="color:#000000; font-size:14px; font-weight:600;">{label}</div>
-        <div style="color:#000000; font-size:30px; font-weight:800;">{value}</div>
-        {delta_html}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="
+            background:#ffffff;
+            padding:18px 20px;
+            border-radius:14px;
+            text-align:center;
+            border-top:5px solid #ffc20f;
+            box-shadow:0 4px 10px rgba(0,0,0,0.12);
+        ">
+            <div style="font-size:13px; color:#000000; margin-bottom:6px;">
+                {label}
+            </div>
+
+            <div style="font-size:30px; font-weight:800; color:#000000;">
+                {value}
+            </div>
+
+            {delta_html}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 def show_user_guide():
     st.markdown("""
