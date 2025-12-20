@@ -92,6 +92,19 @@ def set_page_style():
     [data-testid="stSidebar"] .css-1d391kg {
         color: white;
     }
+    /* Metric label & value di SIDEBAR jadi putih */
+    [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
+        color: rgba(255,255,255,0.85) !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMetricValue"] {
+        color: white !important;
+        font-weight: bold;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMetricDelta"] {
+        color: #a7f3d0 !important; /* hijau muda */
+    }
     
     /* Expander */
     .streamlit-expanderHeader {
