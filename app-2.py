@@ -2332,8 +2332,7 @@ def main():
         st.markdown("""
         <div style='text-align: center; padding: 20px;'>
             <h1 style='color: white; font-size: 48px;'>🍽️</h1>
-            <h2 style='color: white;'>Restaurant Strategy</h2>
-            <p style='color: rgba(255,255,255,0.8);'>Recommendation System</p>
+            <p style='color: rgba(255,255,255,0.8);'>Restaurant Strategy Recommendation System</p>
         </div>
         """, unsafe_allow_html=True)
         
