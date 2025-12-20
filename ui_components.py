@@ -150,7 +150,7 @@ def show_progress_indicator(current_step):
                 </div>
                 """, unsafe_allow_html=True)
 
-def create_metric_card(label, value, delta=None, icon="📊"):
+def create_metric_card(label, value, delta=None):
     """Buat metric card yang cantik"""
     delta_html = ""
     if delta:
@@ -180,7 +180,7 @@ def show_user_guide():
 
     <div style="margin-bottom:20px;">
         <span style="font-size:28px; font-weight:700; color:#667eea;">
-            📖 Panduan Penggunaan
+            Panduan Penggunaan
         </span>
     </div>
 
@@ -235,17 +235,17 @@ def show_summary_stats(df, num_matched, total_features):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        create_metric_card("Total Data", f"{len(df):,}", icon="📊")
+        create_metric_card("Total Data", f"{len(df):,}")
     
     with col2:
-        create_metric_card("Kolom Dataset", f"{len(df.columns)}", icon="📋")
+        create_metric_card("Kolom Dataset", f"{len(df.columns)}")
     
     with col3:
-        create_metric_card("Features Matched", f"{num_matched}/{total_features}", icon="✅")
+        create_metric_card("Features Matched", f"{num_matched}/{total_features}")
     
     with col4:
         match_pct = (num_matched / total_features * 100)
-        create_metric_card("Match Rate", f"{match_pct:.0f}%", icon="🎯")
+        create_metric_card("Match Rate", f"{match_pct:.0f}%")
 
 def show_about():
     st.markdown("""
@@ -260,7 +260,7 @@ def show_about():
 
     <div style="margin-bottom:20px;">
         <span style="font-size:28px; font-weight:700; color:#667eea;">
-            ℹ️ Tentang Sistem
+            Tentang Sistem
         </span>
     </div>
 
