@@ -1873,14 +1873,14 @@ def map_dataset_to_features(df: pd.DataFrame,
     # VALIDASI
     if num_matched < min_features:
         message = (
-            f"❌ Dataset terlalu umum. "
+            f"Dataset terlalu umum. "
             f"Hanya {num_matched}/{len(model_features)} fitur yang cocok. "
             f"Minimal {min_features} fitur diperlukan."
         )
         return False, message, matched_features, num_matched, mapping_detail, df_final
     
     message = (
-        f"✅ Dataset valid! {num_matched}/{len(model_features)} fitur berhasil di-map."
+        f"Dataset valid! {num_matched}/{len(model_features)} fitur berhasil di-map."
     )
     return True, message, matched_features, num_matched, mapping_detail, df_final
 

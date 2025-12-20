@@ -2,167 +2,170 @@ import streamlit as st
 import pandas as pd
 
 def set_page_style():
-    """Custom CSS untuk styling yang lebih menarik"""
+    """Custom CSS tema kuning #ffc20f, hitam, dan putih"""
     st.markdown(
     """
     <style>
-    /* Main background */
+    /* ===== MAIN BACKGROUND ===== */
     .main {
-        background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
+        background-color: #ffffff;
     }
-    
-    /* Card styling */
+
+    /* ===== CARD ===== */
     .css-1r6slb0 {
-        background-color: white;
-        border-radius: 10px;
+        background-color: #ffffff;
+        border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        border-top: 5px solid #ffc20f;
     }
-    
-    /* Metrics */
+
+    /* ===== METRICS ===== */
     [data-testid="stMetricValue"] {
         font-size: 28px;
         font-weight: bold;
-        color: #667eea;
-    }
-    
-    /* Headers */
-    h1 {
-        color: #ffffff;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    h2, h3 {
-        color: #667eea;
-    }
-    
-    /* Buttons */
-    .stButton>button {
-        background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 10px 25px;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-    
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Info boxes */
-    .stAlert {
-        border-radius: 10px;
-        border-left: 5px solid #667eea;
-    }
-    
-    /* Progress indicator */
-    .step-indicator {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px 0;
-        padding: 20px;
-        background: white;
-        border-radius: 10px;
-    }
-    
-    .step {
-        flex: 1;
-        text-align: center;
-        padding: 10px;
-        position: relative;
-    }
-    
-    .step.active {
-        color: #667eea;
-        font-weight: bold;
-    }
-    
-    .step.completed {
-        color: #10b981;
-    }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
-    }
-    
-    [data-testid="stSidebar"] .css-1d391kg {
-        color: white;
-    }
-    /* Metric label & value di SIDEBAR jadi putih */
-    [data-testid="stSidebar"] [data-testid="stMetricLabel"] {
-        color: rgba(255,255,255,0.85) !important;
+        color: #000000;
     }
 
+    [data-testid="stMetricLabel"] {
+        color: #374151;
+        font-weight: 600;
+    }
+
+    /* ===== HEADERS ===== */
+    h1 {
+        color: #000000;
+        font-weight: 800;
+        border-bottom: 4px solid #ffc20f;
+        padding-bottom: 8px;
+    }
+
+    h2, h3 {
+        color: #000000;
+        font-weight: 700;
+    }
+
+    /* ===== BUTTONS ===== */
+    .stButton>button {
+        background-color: #ffc20f;
+        color: #000000;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 28px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .stButton>button:hover {
+        background-color: #e6ad00;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    /* ===== ALERT / INFO ===== */
+    .stAlert {
+        border-radius: 10px;
+        border-left: 6px solid #ffc20f;
+        background-color: #fffbea;
+        color: #000000;
+    }
+
+    /* ===== SIDEBAR ===== */
+    [data-testid="stSidebar"] {
+        background-color: #000000;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+
+    [data-testid="stSidebar"] a {
+        color: #ffc20f !important;
+        font-weight: bold;
+    }
+
+    /* Metric di Sidebar */
     [data-testid="stSidebar"] [data-testid="stMetricValue"] {
-        color: white !important;
+        color: #ffc20f !important;
         font-weight: bold;
     }
 
     [data-testid="stSidebar"] [data-testid="stMetricDelta"] {
-        color: #a7f3d0 !important; /* hijau muda */
+        color: #a7f3d0 !important;
     }
-    
-    /* Expander */
+
+    /* ===== EXPANDER ===== */
     .streamlit-expanderHeader {
-        background-color: #f8f9ff;
-        border-radius: 5px;
+        background-color: #fffbea;
+        border-radius: 6px;
+        border-left: 4px solid #ffc20f;
+        font-weight: 600;
+        color: #000000;
     }
+
+    /* ===== TABLE ===== */
+    thead tr th {
+        background-color: #ffc20f;
+        color: #000000;
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+
     </style>
-    """
-    , unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+    )
+
 
 def show_progress_indicator(current_step):
-    """Tampilkan progress indicator untuk langkah-langkah"""
     steps = [
-        ("📤", "Upload Data"),
-        ("🔗", "Mapping"),
-        ("📊", "Analysis"),
-        ("🎯", "Results"),
-        ("💾", "Export")
+        ("Upload Data"),
+        ("Mapping"),
+        ("Analysis"),
+        ("Results"),
+        ("Export")
     ]
-    
+
     cols = st.columns(len(steps))
-    for idx, (col, (icon, label)) in enumerate(zip(cols, steps)):
+    for i, ((label), col) in enumerate(zip(steps, cols)):
         with col:
-            if idx < current_step:
-                st.markdown(f"""
-                <div style='text-align: center; color: #10b981;'>
-                    <div style='font-size: 32px;'>{icon}</div>
-                    <div style='font-size: 12px; font-weight: bold;'>✓ {label}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            elif idx == current_step:
-                st.markdown(f"""
-                <div style='text-align: center; color: #667eea;'>
-                    <div style='font-size: 32px;'>{icon}</div>
-                    <div style='font-size: 12px; font-weight: bold;'>► {label}</div>
-                </div>
-                """, unsafe_allow_html=True)
+            if i < current_step:
+                color = "#000000"
+                prefix = "✓"
+            elif i == current_step:
+                color = "#ffc20f"
+                prefix = "►"
             else:
-                st.markdown(f"""
-                <div style='text-align: center; color: #9ca3af;'>
-                    <div style='font-size: 32px;'>{icon}</div>
-                    <div style='font-size: 12px;'>{label}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                color = "#9ca3af"
+                prefix = ""
+
+            st.markdown(f"""
+            <div style="text-align:center; color:{color};">
+                <div style="font-size:16px; font-weight:700;">{prefix} {label}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
 def create_metric_card(label, value, delta=None):
     """Buat metric card yang cantik"""
     delta_html = ""
-    if delta:
-        color = "#10b981" if delta > 0 else "#ef4444"
-        delta_html = f"<div style='color: {color}; font-size: 14px;'>▲ {delta}</div>"
-    
+    if delta is not None:
+        color = "#16a34a" if delta > 0 else "#dc2626"
+        delta_html = f"<div style='color:{color}; font-size:14px;'>▲ {delta}</div>"
+
     st.markdown(f"""
-    <div style='background: white; padding: 20px; border-radius: 10px; 
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;'>
-        <div style='font-size: 32px; margin-bottom: 10px;'>{icon}</div>
-        <div style='color: #6b7280; font-size: 14px; margin-bottom: 5px;'>{label}</div>
-        <div style='color: #667eea; font-size: 28px; font-weight: bold;'>{value}</div>
+    <div style="
+        background:#ffffff;
+        padding:22px;
+        border-radius:16px;
+        border-top:5px solid #ffc20f;
+        box-shadow:0 6px 16px rgba(0,0,0,0.12);
+        text-align:center;
+    ">
+        <div style="color:#000000; font-size:14px; font-weight:600;">{label}</div>
+        <div style="color:#000000; font-size:30px; font-weight:800;">{value}</div>
         {delta_html}
     </div>
     """, unsafe_allow_html=True)
@@ -170,8 +173,9 @@ def create_metric_card(label, value, delta=None):
 def show_user_guide():
     st.markdown("""
     <div style="
-        background:white;
-        color:#374151;
+        color:#000000;
+        border-left:4px solid #ffc20f;
+        background:#fff6d6;
         padding:32px;
         border-radius:16px;
         box-shadow:0 4px 12px rgba(0,0,0,0.1);
@@ -250,8 +254,9 @@ def show_summary_stats(df, num_matched, total_features):
 def show_about():
     st.markdown("""
     <div style="
-        background:white;
-        color:#374151;
+        color:#000000;
+        border-left:4px solid #ffc20f;
+        background:#fff6d6;
         padding:36px;
         border-radius:16px;
         box-shadow:0 4px 12px rgba(0,0,0,0.1);

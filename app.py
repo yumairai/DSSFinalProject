@@ -18,6 +18,12 @@ from ui_components import (
     show_about
 )
 
+PRIMARY = "#ffc20f"
+DARK = "#000000"
+LIGHT = "#ffffff"
+MUTED = "#6b7280"
+SOFT = "#fff6d6"
+
 def main():
     st.set_page_config(
         page_title="SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN",
@@ -33,10 +39,10 @@ def main():
     # SIDEBAR - NAVIGATION & INFO
     # ==============================================================================
     with st.sidebar:
-        st.markdown("""
-        <div style='text-align: center; padding: 20px;'>
-            <h1 style='color: white; font-size: 48px;'>🍽️</h1>
-            <p style='color: rgba(255,255,255,0.8);'>Restaurant Strategy Recommendation System</p>
+        st.markdown(f"""
+        <div style='text-align:center; padding:20px;'>
+            <h1 style='color:{PRIMARY}; font-size:48px;'>🍽️</h1>
+            <p style='color:#ffffffcc;'>Restaurant Strategy Recommendation System</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -83,17 +89,14 @@ def main():
     # HOME PAGE
     if page == "Home":
         # Header
-        st.markdown("""
-        <div style='text-align: center; padding: 40px 0;'>
-            <h1 style='font-size: 48px; margin-bottom: 10px;'>
-                🍽️ SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN
+        st.markdown(f"""
+        <div style='text-align:center; padding:40px 0;'>
+            <h1 style='font-size:48px; color:{DARK};'>
+                SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN
             </h1>
-            <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
-                Analisis Data Pelanggan & Dapatkan Strategi Bisnis Terbaik
-            </p>
         </div>
         """, unsafe_allow_html=True)
-        
+
         # Show progress indicator
         current_step = 0
         if 'df' in st.session_state:
@@ -116,7 +119,7 @@ def main():
             st.markdown("""
             <div style='background: white; padding: 30px; border-radius: 15px; 
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-                <h2 style='color: #667eea;'>📤 Step 1: Upload Dataset Pelanggan</h2>
+                <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Step 1: Upload Dataset Pelanggan</h2>
                 <p style='color: #6b7280;'>
                     Upload file CSV yang berisi data pelanggan restoran Anda. Sistem akan otomatis 
                     mencocokkan kolom dengan features yang dibutuhkan.
@@ -135,8 +138,7 @@ def main():
             
             with col2:
                 st.markdown("""
-                <div style='background: #f0f9ff; padding: 20px; border-radius: 10px; 
-                            border-left: 4px solid #667eea;'>
+                <div style='background: #fff6d6; border-left: 4px solid #ffc20f; color: #000000; solid #ffc20f; padding: 20px; border-radius: 10px; '>
                     <strong style='color: #667eea;'>💡 Tips:</strong><br>
                     <ul style='color: #4b5563; font-size: 14px; margin-top: 10px;'>
                         <li>Format: CSV</li>
@@ -148,7 +150,7 @@ def main():
         
         if uploaded_file is None:
             # Show example dataset
-            with st.expander("📋 Lihat Contoh Format Dataset", expanded=True):
+            with st.expander("Lihat Contoh Format Dataset", expanded=True):
                 st.markdown("""
                 <p style='color: #4b5563; margin-bottom: 15px;'>
                     Berikut contoh struktur data yang ideal untuk analisis:
@@ -215,7 +217,7 @@ def main():
             st.markdown("""
             <div style='background: white; padding: 30px; border-radius: 15px; 
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-                <h2 style='color: #667eea;'>🔗 Step 2: Mapping Features</h2>
+                <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Step 2: Mapping Features</h2>
                 <p style='color: #6b7280;'>
                     Sistem akan otomatis mencocokkan kolom dataset Anda dengan features model ML.
                 </p>
@@ -320,7 +322,7 @@ def main():
             st.markdown("""
             <div style='background: white; padding: 30px; border-radius: 15px; 
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-                <h2 style='color: #667eea;'>📊 Step 3: Analisis Feature Importance</h2>
+                <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Step 3: Analisis Feature Importance</h2>
                 <p style='color: #6b7280;'>
                     Melihat feature mana yang paling berpengaruh terhadap kepuasan pelanggan.
                 </p>
@@ -384,7 +386,7 @@ def main():
                 for idx, (feat, imp) in enumerate(top_features.head(3).items(), 1):
                     st.markdown(f"""
                     <div style='background: white; padding: 15px; border-radius: 8px; 
-                                margin-bottom: 10px; border-left: 4px solid #667eea;'>
+                                margin-bottom: 10px; border-left: 4px solid #ffc20f;'>
                         <strong style='color: #667eea;'>#{idx} {feat}</strong><br>
                         <span style='color: #10b981; font-size: 18px; font-weight: bold;'>
                             {imp:.1%}
@@ -408,7 +410,7 @@ def main():
             st.markdown("""
             <div style='background: white; padding: 30px; border-radius: 15px; 
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-                <h2 style='color: #667eea;'>🎯 Step 4: Analisis TOPSIS & Rekomendasi</h2>
+                <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Step 4: Analisis TOPSIS & Rekomendasi</h2>
                 <p style='color: #6b7280;'>
                     Mendapatkan ranking strategi bisnis terbaik menggunakan metode TOPSIS.
                 </p>
@@ -575,7 +577,7 @@ def main():
             st.markdown("""
             <div style='background: white; padding: 30px; border-radius: 15px; 
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-                <h2 style='color: #667eea;'>💾 Step 5: Export Hasil Analisis</h2>
+                <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Step 5: Export Hasil Analisis</h2>
                 <p style='color: #6b7280;'>
                     Download hasil analisis untuk dokumentasi dan presentasi.
                 </p>
@@ -587,7 +589,7 @@ def main():
             with col1:
                 st.markdown("""
                 <div style='background: #f0f9ff; padding: 20px; border-radius: 10px; text-align: center;'>
-                    <div style='font-size: 48px; margin-bottom: 10px;'>📊</div>
+                    <div style='font-size: 48px; margin-bottom: 10px;'></div>
                     <h4 style='color: #667eea;'>TOPSIS Results</h4>
                     <p style='color: #6b7280; font-size: 14px;'>Ranking lengkap semua strategi</p>
                 </div>
@@ -605,7 +607,7 @@ def main():
             with col2:
                 st.markdown("""
                 <div style='background: #f0fdf4; padding: 20px; border-radius: 10px; text-align: center;'>
-                    <div style='font-size: 48px; margin-bottom: 10px;'>🎯</div>
+                    <div style='font-size: 48px; margin-bottom: 10px;'></div>
                     <h4 style='color: #10b981;'>Decision Matrix</h4>
                     <p style='color: #6b7280; font-size: 14px;'>Matrix keputusan TOPSIS</p>
                 </div>
@@ -623,7 +625,7 @@ def main():
             with col3:
                 st.markdown("""
                 <div style='background: #fef3c7; padding: 20px; border-radius: 10px; text-align: center;'>
-                    <div style='font-size: 48px; margin-bottom: 10px;'>🔗</div>
+                    <div style='font-size: 48px; margin-bottom: 10px;'></div>
                     <h4 style='color: #f59e0b;'>Feature Mapping</h4>
                     <p style='color: #6b7280; font-size: 14px;'>Pemetaan kolom dataset</p>
                 </div>
@@ -670,7 +672,7 @@ def main():
         st.markdown("""
         <div style='background: white; padding: 30px; border-radius: 15px; 
                     box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-            <h2 style='color: #667eea;'>Summary Statistics</h2>
+            <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Summary Statistics</h2>
         </div>
         """, unsafe_allow_html=True)
         
@@ -699,7 +701,7 @@ def main():
         st.markdown("""
         <div style='background: white; padding: 30px; border-radius: 15px; 
                     box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
-            <h2 style='color: #667eea;'>🔍 Data Quality Check</h2>
+            <h2 style='color: #000000; border-left:5px solid #ffc20f; padding-left:12px;'>Data Quality Check</h2>
         </div>
         """, unsafe_allow_html=True)
         
