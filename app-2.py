@@ -2316,7 +2316,7 @@ def show_about():
 # ==============================================================================
 def main():
     st.set_page_config(
-        page_title="Sistem Rekomendasi Strategi Restoran",
+        page_title="SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN",
         page_icon="🍽️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -2383,7 +2383,7 @@ def main():
         st.markdown("""
         <div style='text-align: center; padding: 40px 0;'>
             <h1 style='font-size: 48px; margin-bottom: 10px;'>
-                🍽️ Sistem Rekomendasi Strategi Restoran
+                🍽️ SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN
             </h1>
             <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
                 Analisis Data Pelanggan & Dapatkan Strategi Bisnis Terbaik
