@@ -1,707 +1,766 @@
-import joblib
-import pandas as pd
-import numpy as np
-from typing import List, Dict, Tuple, Optional
 import streamlit as st
-from rapidfuzz import fuzz, process
+import pandas as pd
 
-# ==============================================================================
-# FUNGSI TOPSIS
-# ==============================================================================
-
-def calculate_topsis(decision_matrix: pd.DataFrame, weights: List[float], criteria_type: List[str]) -> pd.DataFrame:
-    """
-    Melakukan perhitungan TOPSIS.
-    """
-    if not np.isclose(sum(weights), 1.0):
-        weights = np.array(weights) / sum(weights)
-    
-    X = decision_matrix.values
-    R = X / np.sqrt((X**2).sum(axis=0))
-    V = R * np.array(weights)
-
-    A_plus = np.zeros(V.shape[1])
-    A_minus = np.zeros(V.shape[1])
-    
-    for j in range(V.shape[1]):
-        if criteria_type[j].lower() == 'benefit':
-            A_plus[j] = V[:, j].max()
-            A_minus[j] = V[:, j].min()
-        elif criteria_type[j].lower() == 'cost':
-            A_plus[j] = V[:, j].min()
-            A_minus[j] = V[:, j].max()
-
-    S_plus = np.sqrt(((V - A_plus)**2).sum(axis=1))
-    S_minus = np.sqrt(((V - A_minus)**2).sum(axis=1))
-    Closeness = S_minus / (S_plus + S_minus)
-
-    # Buat pandas Series agar bisa pakai .rank()
-    closeness_series = pd.Series(Closeness, index=decision_matrix.index)
-    
-    results_df = pd.DataFrame({
-        'Strategy': decision_matrix.index,
-        'Closeness_Score': Closeness,
-        'Rank': closeness_series.rank(method='dense', ascending=False).astype(int)
-    }).sort_values(by='Closeness_Score', ascending=False).set_index('Strategy')
-    
-    return results_df
-
-# ==============================================================================
-# FUNGSI MAPPING & VALIDASI
-# ==============================================================================
-
-def load_model_features(model_file: str, feature_names_file: str) -> Tuple[Optional[object], Optional[list]]:
-    """Load model dan feature names"""
-    try:
-        model = joblib.load(model_file)
-        feature_names = joblib.load(feature_names_file)
-        return model, feature_names
-    except Exception as e:
-        st.error(f"❌ Error memuat model: {str(e)}")
-        return None, None
-
-def get_feature_metadata() -> Dict[str, Dict]:
-    """
-    Metadata untuk setiap feature: kategori dan tipe (benefit/cost)
-    """
-    return {
-        # Demografi
-        'Age': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Usia pelanggan'},
-        'Gender': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Jenis kelamin'},
-        'Income': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Pendapatan'},
-        'AgeGroup': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Kelompok usia'},
-        'YoungCustomer': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Pelanggan muda'},
-        'SeniorCustomer': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Pelanggan senior'},
-        'HighIncome': {'category': 'Demographics', 'type': 'Benefit', 'desc': 'Pendapatan tinggi'},
-        
-        # Perilaku Kunjungan
-        'VisitFrequency': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Frekuensi kunjungan'},
-        'AverageSpend': {'category': 'Visit Behavior', 'type': 'Cost', 'desc': 'Rata-rata pengeluaran'},
-        'PreferredCuisine': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Masakan favorit'},
-        'TimeOfVisit': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Waktu kunjungan'},
-        'GroupSize': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Ukuran grup'},
-        'DiningOccasion': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Jenis acara makan'},
-        'MealType': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Tipe makanan'},
-        
-        # Status/Interaksi
-        'OnlineReservation': {'category': 'Customer Status', 'type': 'Benefit', 'desc': 'Reservasi online'},
-        'DeliveryOrder': {'category': 'Customer Status', 'type': 'Benefit', 'desc': 'Order delivery'},
-        'LoyaltyProgramMember': {'category': 'Customer Status', 'type': 'Benefit', 'desc': 'Member loyalty'},
-        'OnlineUser': {'category': 'Customer Status', 'type': 'Benefit', 'desc': 'Pengguna online'},
-        'LoyalCustomer': {'category': 'Customer Status', 'type': 'Benefit', 'desc': 'Pelanggan setia'},
-        
-        # Rating/Feedback
-        'WaitTime': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Waktu tunggu'},
-        'ServiceRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Rating layanan'},
-        'FoodRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Rating makanan'},
-        'AmbianceRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Rating suasana'},
-        'TotalRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Total rating'},
-        'AvgRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Rata-rata rating'},
-        'RatingStd': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Standar deviasi rating'},
-        'MaxRating': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Rating maksimum'},
-        'MinRating': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Rating minimum'},
-        'RatingRange': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Rentang rating'},
-        
-        # Engineered Features
-        'SpendPerPerson': {'category': 'Financial', 'type': 'Cost', 'desc': 'Pengeluaran per orang'},
-        'SpendToIncomeRatio': {'category': 'Financial', 'type': 'Cost', 'desc': 'Rasio spend/income'},
-        'HighSpender': {'category': 'Financial', 'type': 'Benefit', 'desc': 'Pengeluaran tinggi'},
-        'LongWait': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Tunggu lama'},
-        'WaitToService': {'category': 'Service Quality', 'type': 'Cost', 'desc': 'Rasio wait/service'},
-        'Rating_x_Loyalty': {'category': 'Interaction', 'type': 'Benefit', 'desc': 'Rating × Loyalty'},
-        'Rating_x_Frequency': {'category': 'Interaction', 'type': 'Benefit', 'desc': 'Rating × Frequency'},
-        'Wait_x_Service': {'category': 'Interaction', 'type': 'Cost', 'desc': 'Wait × Service'},
-        'Spend_x_Rating': {'category': 'Interaction', 'type': 'Benefit', 'desc': 'Spend × Rating'},
-        'LargeGroup': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Grup besar'},
-        'Solo': {'category': 'Visit Behavior', 'type': 'Benefit', 'desc': 'Makan sendiri'},
-        'ConsistentQuality': {'category': 'Service Quality', 'type': 'Benefit', 'desc': 'Kualitas konsisten'},
-    }
-
-def map_dataset_to_features(df: pd.DataFrame, model_features: List[str], min_features: int = 5
-                           ) -> Tuple[bool, str, List[str], int, dict, pd.DataFrame]:
-    """
-    Smart Mapping:
-    - exact match
-    - synonym
-    - fuzzy match
-    - derived features
-
-    Return:
-    - is_valid
-    - message
-    - matched_features (mapped columns)
-    - num_matched
-    - mapping_detail (dict: model_feature -> dataset_column)
-    - df_final (dataset setelah mapping)
-    """
-
-    df = df.copy()
-
-    # -------------------------------------------------
-    # Normalisasi nama kolom
-    # -------------------------------------------------
-    def normalize(col):
-        return col.lower().replace("_", "").replace("-", "")
-
-    df_norm = {normalize(c): c for c in df.columns}
-
-    # -------------------------------------------------
-    # Sinonim
-    # -------------------------------------------------
-    synonyms = {
-        "waittime": ["waitingtime", "waiting_time", "queuetime", "wait"],
-        "income": ["salary", "earning", "monthlyincome", "pendapatan"],
-        "averagespend": ["avgspend", "spending", "amountspent", "moneyspent"],
-        "visitfrequency": ["visitcount", "numvisit", "freqvisit"],
-        "groupsize": ["pax", "guestcount", "peoplecount"],
-        "totalrating": ["overallrating", "ratingtotal"],
-        "foodrating": ["ratingfood"],
-        "servicerating": ["ratingservice"],
-        "ambiancerating": ["ratingambiance", "ratingenvironment"],
-    }
-
-    mapping_detail = {}
-    matched_features = []
-    missing_features = []
-
-    # -------------------------------------------------
-    # SMART MATCHING
-    # -------------------------------------------------
-    for feat in model_features:
-        f_norm = normalize(feat)
-
-        # 1) exact match
-        if f_norm in df_norm:
-            col = df_norm[f_norm]
-            mapping_detail[feat] = col
-            matched_features.append(col)
-            continue
-
-        # 2) synonym match
-        if f_norm in synonyms:
-            for syn in synonyms[f_norm]:
-                syn_norm = normalize(syn)
-                if syn_norm in df_norm:
-                    col = df_norm[syn_norm]
-                    mapping_detail[feat] = col
-                    matched_features.append(col)
-                    break
-            if feat in mapping_detail:
-                continue
-        
-        # 3) fuzzy match
-        best_match, score = process.extractOne(
-            f_norm, df_norm.keys(), scorer=fuzz.token_sort_ratio
-        )
-        if score >= 75:
-            col = df_norm[best_match]
-            mapping_detail[feat] = col
-            matched_features.append(col)
-            continue
-
-        # 4) fitur tidak ketemu
-        missing_features.append(feat)
-
-    # -------------------------------------------------
-    # FITUR TURUNAN
-    # -------------------------------------------------
-    derived = {}
-
-    # SpendPerPerson
-    if "TotalSpend" in df.columns and "GroupSize" in df.columns:
-        df["SpendPerPerson"] = df["TotalSpend"] / df["GroupSize"]
-        derived["SpendPerPerson"] = ["TotalSpend", "GroupSize"]
-        if "SpendPerPerson" in model_features:
-            mapping_detail["SpendPerPerson"] = "SpendPerPerson"
-            matched_features.append("SpendPerPerson")
-
-    # SpendToIncomeRatio
-    if "AverageSpend" in df.columns and "Income" in df.columns:
-        df["SpendToIncomeRatio"] = df["AverageSpend"] / df["Income"]
-        derived["SpendToIncomeRatio"] = ["AverageSpend", "Income"]
-        if "SpendToIncomeRatio" in model_features:
-            mapping_detail["SpendToIncomeRatio"] = "SpendToIncomeRatio"
-            matched_features.append("SpendToIncomeRatio")
-
-    # Rating aggregates
-    rating_cols = ["ServiceRating", "FoodRating", "AmbianceRating"]
-    if all(col in df.columns for col in rating_cols):
-        df["AvgRating"] = df[rating_cols].mean(axis=1)
-        df["TotalRating"] = df[rating_cols].sum(axis=1)
-        df["RatingStd"] = df[rating_cols].std(axis=1)
-        for new_feat in ["AvgRating", "TotalRating", "RatingStd"]:
-            if new_feat in model_features:
-                mapping_detail[new_feat] = new_feat
-                matched_features.append(new_feat)
-        derived["RatingDerived"] = rating_cols
-
-    # -------------------------------------------------
-    # FINAL FEATURE SET
-    # -------------------------------------------------
-    matched_features = list(dict.fromkeys(matched_features))  # remove duplicates
-    num_matched = len(matched_features)
-
-    df_final = df[[col for col in matched_features if col in df.columns]]
-
-    # -------------------------------------------------
-    # VALIDATOR
-    # -------------------------------------------------
-    if num_matched < min_features:
-        message = (
-            f"❌ Dataset terlalu umum. "
-            f"Hanya {num_matched}/{len(model_features)} fitur yang cocok."
-        )
-        return False, message, matched_features, num_matched, mapping_detail, df_final
-
-    message = (
-        f"✅ Dataset valid! {num_matched}/{len(model_features)} fitur berhasil di-map."
-    )
-    return True, message, matched_features, num_matched, mapping_detail, df_final
-
-def get_feature_weights(model, feature_names: List[str], matched_features: List[str]) -> Dict[str, float]:
-    """
-    Ambil feature importance dari model untuk features yang matched
-    """
-    feature_importances = pd.Series(model.feature_importances_, index=feature_names)
-    
-    # Filter hanya matched features
-    matched_importances = feature_importances[matched_features]
-    
-    # Normalisasi
-    if matched_importances.sum() == 0:
-        normalized = np.ones(len(matched_importances)) / len(matched_importances)
-    else:
-        normalized = matched_importances / matched_importances.sum()
-    
-    return dict(zip(matched_features, normalized))
-
-# ==============================================================================
-# APLIKASI STREAMLIT
-# ==============================================================================
+from topsis_utils import calculate_topsis
+from data_mapping import (
+    load_model_features,
+    get_feature_metadata,
+    get_strategy_feature_mapping,
+    map_dataset_to_features,
+    build_topsis_matrix
+)
+from ui_components import (
+    set_page_style,
+    show_progress_indicator,
+    create_metric_card,
+    show_user_guide,
+    show_summary_stats,
+    show_about
+)
 
 def main():
     st.set_page_config(
-        page_title="Sistem Rekomendasi Strategi - TOPSIS",
+        page_title="SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN",
+        page_icon="🍽️",
         layout="wide",
         initial_sidebar_state="expanded"
     )
-
-    st.title("🍽️ Sistem Rekomendasi Strategi Restoran dengan TOPSIS")
-    st.markdown("""
-    Aplikasi ini menganalisis dataset pelanggan Anda dan memberikan rekomendasi strategi 
-    terbaik menggunakan metode **TOPSIS** dengan bobot dari **Feature Importance Model ML**.
-    """)
-
-    # Definisi Strategi
-    STRATEGIES = [
-        "A1: Tingkatkan Kualitas Layanan",
-        "A2: Optimalkan Kualitas Makanan",
-        "A3: Percepat Waktu Penyajian",
-        "A4: Program Loyalty & Retention",
-        "A5: Perbaiki Ambience & Kebersihan",
-        "A6: Strategi Pricing & Value"
-    ]
-
+    
+    # Apply custom styling
+    set_page_style()
+    
     # ==============================================================================
-    # STEP 1: UPLOAD DATASET
+    # SIDEBAR - NAVIGATION & INFO
     # ==============================================================================
-    st.header("📤 Step 1: Upload Dataset Pelanggan")
-    
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        uploaded_file = st.file_uploader(
-            "Upload file CSV dataset pelanggan Anda",
-            type=['csv'],
-            help="Dataset harus memiliki kolom yang match dengan features model ML"
-        )
-    
-    with col2:
-        st.info("""
-        **Format yang disupport:**
-        - CSV file
-        - Kolom harus match dengan features model
-        """)
-
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-            st.success(f"✅ Dataset berhasil dimuat: {df.shape[0]} baris × {df.shape[1]} kolom")
-            
-            with st.expander("👁️ Preview Dataset", expanded=False):
-                st.dataframe(df.head(10), use_container_width=True)
-                st.write(f"**Kolom ({len(df.columns)}):** {', '.join(df.columns.tolist())}")
+    with st.sidebar:
+        st.markdown("""
+        <div style='text-align: center; padding: 20px;'>
+            <h1 style='color: white; font-size: 48px;'>🍽️</h1>
+            <h2 style='color: white;'>Restaurant Strategy</h2>
+            <p style='color: rgba(255,255,255,0.8);'>Recommendation System</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        except Exception as e:
-            st.error(f"❌ Error membaca file: {str(e)}")
-            st.stop()
+        st.markdown("---")
         
-        # ==============================================================================
-        # STEP 2: LOAD MODEL & MAPPING FEATURES
-        # ==============================================================================
-        st.header("🔗 Step 2: Mapping Kolom Dataset ke Features Model")
-        
-        model, feature_names = load_model_features("model_satisfied_v2.pkl", "feature_names.pkl")
-        
-        if model is None or feature_names is None:
-            st.error("❌ Model atau feature names tidak dapat dimuat. Pastikan file tersedia.")
-            st.stop()
-        
-        st.success(f"✅ Model dimuat: **{len(feature_names)} features** di model")
-        
-        # Mapping
-        MIN_FEATURES = 5
-        is_valid, message, matched_features, num_matched = map_dataset_to_features(
-            df, feature_names, MIN_FEATURES
+        # Navigation
+        page = st.radio(
+            "📍 Navigation",
+            ["🏠 Home", "📖 User Guide", "📊 Analysis Dashboard", "ℹ️ About"],
+            label_visibility="collapsed"
         )
         
-        # Tampilkan mapping per kategori
-        st.subheader("📋 Hasil Mapping Features")
+        st.markdown("---")
         
-        feature_metadata = get_feature_metadata()
+        # Quick Stats (jika ada data yang di-upload)
+        if 'df' in st.session_state:
+            st.markdown("""
+            <div style='background: rgba(255,255,255,0.1); padding: 15px; 
+                        border-radius: 10px; color: white;'>
+                <h4>📈 Quick Stats</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.metric("Data Rows", f"{len(st.session_state.df):,}")
+            st.metric("Columns", f"{len(st.session_state.df.columns)}")
+            
+            if 'num_matched' in st.session_state:
+                st.metric("Matched Features", f"{st.session_state.num_matched}")
         
-        # Group by category
-        categories = {}
-        for feat in feature_names:
-            if feat in feature_metadata:
-                cat = feature_metadata[feat]['category']
-                if cat not in categories:
-                    categories[cat] = []
-                categories[cat].append(feat)
+        st.markdown("---")
         
-        col1, col2 = st.columns(2)
+        # Footer
+        st.markdown("""
+        <div style='color: rgba(255,255,255,0.6); font-size: 12px; text-align: center;'>
+            <p>Powered by TOPSIS & ML</p>
+            <p>Version 2.0</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # ==============================================================================
+    # MAIN CONTENT AREA
+    # ==============================================================================
+    
+    # HOME PAGE
+    if page == "🏠 Home":
+        # Header
+        st.markdown("""
+        <div style='text-align: center; padding: 40px 0;'>
+            <h1 style='font-size: 48px; margin-bottom: 10px;'>
+                🍽️ SISTEM REKOMENDASI STRATEGI PENINGKATAN KEPUASAN PELANGGAN RESTORAN
+            </h1>
+            <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
+                Analisis Data Pelanggan & Dapatkan Strategi Bisnis Terbaik
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        for idx, (category, features) in enumerate(categories.items()):
-            with (col1 if idx % 2 == 0 else col2):
-                with st.expander(f"📁 **{category}**", expanded=False):
-                    matched = [f for f in features if f in matched_features]
-                    missing = [f for f in features if f not in matched_features]
-                    
-                    if matched:
-                        st.success(f"✅ Matched ({len(matched)}):")
-                        for f in matched:
-                            desc = feature_metadata.get(f, {}).get('desc', '')
-                            st.write(f"  • {f} - {desc}")
-                    
-                    if missing:
-                        st.warning(f"⚠️ Not Found ({len(missing)}):")
-                        st.write(", ".join(missing))
+        # Show progress indicator
+        current_step = 0
+        if 'df' in st.session_state:
+            current_step = 1
+        if 'mapping_done' in st.session_state:
+            current_step = 2
+        if 'analysis_done' in st.session_state:
+            current_step = 3
+        if 'results_done' in st.session_state:
+            current_step = 4
         
-        # Summary
-        st.metric("Total Features Matched", f"{num_matched} / {len(feature_names)}", 
-                  delta=f"{(num_matched/len(feature_names)*100):.1f}%")
+        show_progress_indicator(current_step)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # ==============================================================================
-        # STEP 3: VALIDASI DATASET
+        # STEP 1: UPLOAD DATASET
         # ==============================================================================
-        st.header("✅ Step 3: Validasi Dataset")
-        
-        if not is_valid:
-            st.error(message)
-            st.warning("""
-            **Saran:**
-            - Pastikan dataset memiliki minimal 5 kolom yang match dengan features model
-            - Features yang umum: ServiceRating, FoodRating, WaitTime, AverageSpend, VisitFrequency
-            - Upload dataset dengan kolom yang lebih relevan dengan model
-            """)
-            st.stop()
-        
-        st.success(message)
-        
-        # Hitung bobot dari model
-        weights_dict = get_feature_weights(model, feature_names, matched_features)
-        
-        st.info("📊 Bobot features dihitung dari Feature Importance model ML")
-        
-        # Tampilkan top features
-        col1, col2 = st.columns([2, 3])
-        
-        with col1:
-            st.subheader("🔝 Top 10 Features (by Weight)")
-            top_features = sorted(weights_dict.items(), key=lambda x: x[1], reverse=True)[:10]
-            top_df = pd.DataFrame(top_features, columns=['Feature', 'Weight'])
-            top_df['Weight (%)'] = (top_df['Weight'] * 100).round(2)
-            st.dataframe(top_df, use_container_width=True)
-        
-        with col2:
-            st.subheader("📊 Feature Types")
-            type_counts = {'Benefit': 0, 'Cost': 0}
-            for feat in matched_features:
-                feat_type = feature_metadata.get(feat, {}).get('type', 'Benefit')
-                type_counts[feat_type] += 1
-            
-            st.write(f"🟢 **Benefit Features**: {type_counts['Benefit']} (higher is better)")
-            st.write(f"🔴 **Cost Features**: {type_counts['Cost']} (lower is better)")
-            
-            st.write("\n**Examples:**")
-            st.write("• Benefit: ServiceRating, FoodRating, VisitFrequency")
-            st.write("• Cost: WaitTime, SpendPerPerson, RatingStd")
-        
-        # ==============================================================================
-        # STEP 4: INPUT SKOR STRATEGI
-        # ==============================================================================
-        st.header("🎯 Step 4: Input Skor Dampak Strategi terhadap Features")
-        
-        st.info(f"📝 Berikan skor 1-5 untuk dampak setiap strategi terhadap **{num_matched} features** yang teridentifikasi")
-        
-        col1, col2 = st.columns([3, 1])
-        with col2:
-            if st.button("🔄 Reset Skor", use_container_width=True):
-                if 'matrix_data' in st.session_state:
-                    del st.session_state.matrix_data
-                if 'last_matched_features' in st.session_state:
-                    del st.session_state.last_matched_features
-                st.rerun()
-        
-        # Default matrix dengan skor realistis
-        # Reset jika matched_features berubah
-        if 'matrix_data' not in st.session_state or \
-           'last_matched_features' not in st.session_state or \
-           st.session_state.last_matched_features != matched_features:
-            
-            default_matrix = []
-            
-            for strategy in STRATEGIES:
-                row = {}
-                for feature in matched_features:
-                    # Logic default scoring berdasarkan strategy dan feature
-                    if "Layanan" in strategy or "Service" in strategy:
-                        if "Service" in feature or "Wait" in feature:
-                            row[feature] = 5
-                        elif "Rating" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 3
-                    
-                    elif "Makanan" in strategy or "Food" in strategy:
-                        if "Food" in feature or "Rating" in feature:
-                            row[feature] = 5
-                        elif "Consistent" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 3
-                    
-                    elif "Penyajian" in strategy or "Waktu" in strategy:
-                        if "Wait" in feature:
-                            row[feature] = 5
-                        elif "Service" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 2
-                    
-                    elif "Loyalty" in strategy:
-                        if "Loyalty" in feature or "Frequency" in feature:
-                            row[feature] = 5
-                        elif "Visit" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 3
-                    
-                    elif "Ambience" in strategy or "Kebersihan" in strategy:
-                        if "Ambiance" in feature or "Ambience" in feature:
-                            row[feature] = 5
-                        elif "Rating" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 3
-                    
-                    elif "Pricing" in strategy or "Value" in strategy:
-                        if "Spend" in feature or "Price" in feature:
-                            row[feature] = 5
-                        elif "Income" in feature:
-                            row[feature] = 4
-                        else:
-                            row[feature] = 3
-                    
-                    else:
-                        row[feature] = 3
-                
-                default_matrix.append(row)
-            
-            st.session_state.matrix_data = pd.DataFrame(
-                default_matrix,
-                index=STRATEGIES,
-                columns=matched_features
-            )
-            st.session_state.last_matched_features = matched_features
-        
-        matrix_input = st.session_state.matrix_data.copy()
-        
-        # VALIDASI: Pastikan kolom matrix_input sama dengan matched_features
-        if set(matrix_input.columns) != set(matched_features):
-            st.warning("⚠️ Detected feature mismatch. Resetting scores...")
-            del st.session_state.matrix_data
-            del st.session_state.last_matched_features
-            st.rerun()
-        
-        # Input UI - Gunakan tabs untuk setiap strategi
-        tabs = st.tabs([f"**{s.split(':')[0]}**" for s in STRATEGIES])
-        
-        for idx, (tab, strategy) in enumerate(zip(tabs, STRATEGIES)):
-            with tab:
-                st.write(f"### {strategy}")
-                
-                # Tampilkan dalam grid
-                num_cols = 4
-                features_list = list(matched_features)
-                
-                for i in range(0, len(features_list), num_cols):
-                    cols = st.columns(num_cols)
-                    for j, col in enumerate(cols):
-                        if i + j < len(features_list):
-                            feature = features_list[i + j]
-                            short_name = feature[:20] + "..." if len(feature) > 20 else feature
-                            
-                            matrix_input.loc[strategy, feature] = col.slider(
-                                short_name,
-                                min_value=1,
-                                max_value=5,
-                                value=int(st.session_state.matrix_data.loc[strategy, feature]),
-                                key=f"slider_{idx}_{i+j}",
-                                help=f"Dampak {strategy} terhadap {feature}"
-                            )
-        
-        st.session_state.matrix_data = matrix_input
-        
-        # ==============================================================================
-        # STEP 5: HITUNG TOPSIS
-        # ==============================================================================
-        st.divider()
-        
-        if st.button("🚀 Hitung Rekomendasi TOPSIS", type="primary", use_container_width=True):
-            st.header("📊 Step 5: Hasil Analisis TOPSIS")
-            
-            # Tampilkan matriks keputusan (hanya top features untuk readability)
-            st.subheader("Matriks Keputusan (Top 15 Features by Weight)")
-            top_15_features = [f[0] for f in sorted(weights_dict.items(), key=lambda x: x[1], reverse=True)[:15]]
-            display_matrix = matrix_input[top_15_features]
-            
-            st.dataframe(
-                display_matrix.style.background_gradient(cmap='RdYlGn', vmin=1, vmax=5),
-                use_container_width=True
-            )
-            
-            # Tentukan tipe kriteria dan weights - HARUS URUTAN YANG SAMA
-            criteria_types = [feature_metadata.get(f, {}).get('type', 'Benefit') for f in matched_features]
-            weights_list = [weights_dict[f] for f in matched_features]
-            
-            # VALIDASI: Pastikan dimensi match
-            assert matrix_input.shape[1] == len(matched_features), f"Matrix columns ({matrix_input.shape[1]}) != matched features ({len(matched_features)})"
-            assert len(weights_list) == len(matched_features), f"Weights ({len(weights_list)}) != matched features ({len(matched_features)})"
-            assert len(criteria_types) == len(matched_features), f"Criteria types ({len(criteria_types)}) != matched features ({len(matched_features)})"
-            
-            # Hitung TOPSIS
-            with st.spinner("⏳ Menghitung skor TOPSIS..."):
-                results_df = calculate_topsis(
-                    decision_matrix=matrix_input,
-                    weights=weights_list,
-                    criteria_type=criteria_types
-                )
-            
-            st.success("✅ Perhitungan selesai!")
-            
-            # Hasil
-            st.subheader("🏆 Hasil Perangkingan Strategi")
+        with st.container():
+            st.markdown("""
+            <div style='background: white; padding: 30px; border-radius: 15px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+                <h2 style='color: #667eea;'>📤 Step 1: Upload Dataset Pelanggan</h2>
+                <p style='color: #6b7280;'>
+                    Upload file CSV yang berisi data pelanggan restoran Anda. Sistem akan otomatis 
+                    mencocokkan kolom dengan features yang dibutuhkan.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
             
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                st.dataframe(
-                    results_df.style.format({'Closeness_Score': '{:.4f}'})
-                                  .background_gradient(subset=['Closeness_Score'], cmap='Greens'),
+                uploaded_file = st.file_uploader(
+                    "Pilih file CSV Anda",
+                    type=['csv'],
+                    help="Upload file CSV dengan data pelanggan"
+                )
+            
+            with col2:
+                st.markdown("""
+                <div style='background: #f0f9ff; padding: 20px; border-radius: 10px; 
+                            border-left: 4px solid #667eea;'>
+                    <strong style='color: #667eea;'>💡 Tips:</strong><br>
+                    <ul style='color: #4b5563; font-size: 14px; margin-top: 10px;'>
+                        <li>Format: CSV</li>
+                        <li>Minimal 5 kolom match</li>
+                        <li>Data bersih tanpa missing values banyak</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        if uploaded_file is None:
+            # Show example dataset
+            with st.expander("📋 Lihat Contoh Format Dataset", expanded=True):
+                st.markdown("""
+                <p style='color: #4b5563; margin-bottom: 15px;'>
+                    Berikut contoh struktur data yang ideal untuk analisis:
+                </p>
+                """, unsafe_allow_html=True)
+                
+                example_df = pd.DataFrame({
+                    'CustomerID': [1, 2, 3, 4, 5],
+                    'ServiceRating': [4.5, 3.8, 4.2, 5.0, 3.5],
+                    'FoodRating': [4.0, 4.5, 3.9, 4.8, 4.0],
+                    'AmbianceRating': [4.2, 3.5, 4.0, 4.5, 3.8],
+                    'WaitTime': [15, 25, 10, 12, 30],
+                    'AverageSpend': [50000, 75000, 45000, 95000, 40000],
+                    'VisitFrequency': [5, 12, 3, 8, 2],
+                    'LoyaltyProgramMember': [1, 1, 0, 1, 0]
+                })
+                st.dataframe(example_df, use_container_width=True)
+                
+                # Download example
+                csv_example = example_df.to_csv(index=False)
+                st.download_button(
+                    "📥 Download Contoh Dataset",
+                    csv_example,
+                    "example_dataset.csv",
+                    "text/csv"
+                )
+            
+            st.stop()
+        
+        # Load dataset
+        try:
+            df = pd.read_csv(uploaded_file, sep=None, engine="python")
+            st.session_state.df = df
+
+            st.success("✅ Dataset berhasil dimuat!")
+
+        except Exception as e:
+            st.error(f"❌ Error membaca file CSV: {e}")
+            st.stop()
+
+
+
+        with st.expander("👁️ Preview Dataset", expanded=True):
+            st.dataframe(
+                df.head(10),
+                use_container_width=True
+            )
+
+            st.markdown(
+                f"""
+                <div style="margin-top: 15px; color: #6b7280;">
+                    <strong>Kolom yang terdeteksi ({len(df.columns)}):</strong><br>
+                    {', '.join(map(str, df.columns))}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        
+        # ==============================================================================
+        # STEP 2: MAPPING FEATURES
+        # ==============================================================================
+        with st.container():
+            st.markdown("""
+            <div style='background: white; padding: 30px; border-radius: 15px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+                <h2 style='color: #667eea;'>🔗 Step 2: Mapping Features</h2>
+                <p style='color: #6b7280;'>
+                    Sistem akan otomatis mencocokkan kolom dataset Anda dengan features model ML.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        model, feature_names = load_model_features("model_satisfied_v2.pkl", "feature_names.pkl")
+        
+        if model is None or feature_names is None:
+            st.error("❌ Model tidak dapat dimuat. Pastikan file model tersedia.")
+            st.stop()
+        
+        with st.spinner("🔄 Sedang melakukan mapping features..."):
+            MIN_FEATURES = 5
+            is_valid, message, matched_features, num_matched, mapping_detail, df_final = map_dataset_to_features(
+                df, feature_names, MIN_FEATURES
+            )
+        
+        st.session_state.num_matched = num_matched
+        st.session_state.mapping_done = True
+        
+        # Show mapping results
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            create_metric_card(
+                "Total Features Model",
+                f"{len(feature_names)}",
+                icon="🎯"
+            )
+        
+        with col2:
+            create_metric_card(
+                "Features Matched",
+                f"{num_matched}",
+                icon="✅"
+            )
+        
+        with col3:
+            match_rate = (num_matched / len(feature_names) * 100)
+            icon = "🎉" if match_rate >= 50 else "⚠️" if match_rate >= 30 else "❌"
+            create_metric_card(
+                "Match Rate",
+                f"{match_rate:.1f}%",
+                icon=icon
+            )
+        
+        if not is_valid:
+            st.error("""
+            ❌ **Dataset tidak memenuhi kriteria minimum!**
+            
+            Dataset Anda hanya memiliki {} features yang cocok, minimal {} features diperlukan.
+            
+            **Saran:**
+            - Pastikan nama kolom sesuai dengan standar (ServiceRating, WaitTime, dll)
+            - Tambahkan kolom yang relevan dengan bisnis restoran
+            - Lihat contoh format dataset di bagian User Guide
+            """.format(num_matched, MIN_FEATURES))
+            st.stop()
+        
+        st.success(message)
+        
+        # Detail mapping per kategori
+        with st.expander("📊 Detail Mapping per Kategori", expanded=True):
+            feature_metadata = get_feature_metadata()
+            
+            categories = {}
+            for feat in matched_features:
+                model_feat = None
+                for mf, df_col in mapping_detail.items():
+                    if df_col == feat:
+                        model_feat = mf
+                        break
+                
+                if model_feat and model_feat in feature_metadata:
+                    cat = feature_metadata[model_feat]['category']
+                    if cat not in categories:
+                        categories[cat] = []
+                    categories[cat].append({
+                        'Model Feature': model_feat,
+                        'Dataset Column': feat,
+                        'Type': feature_metadata[model_feat]['type'],
+                        'Description': feature_metadata[model_feat]['desc']
+                    })
+            
+            # Tampilkan dengan tabs
+            cat_tabs = st.tabs(list(categories.keys()))
+            
+            for tab, (cat_name, features) in zip(cat_tabs, categories.items()):
+                with tab:
+                    cat_df = pd.DataFrame(features)
+                    st.dataframe(
+                        cat_df.style.applymap(
+                            lambda x: 'background-color: #d4edda' if x == 'Benefit' else 'background-color: #fff3cd',
+                            subset=['Type']
+                        ),
+                        use_container_width=True
+                    )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # ==============================================================================
+        # STEP 3: FEATURE IMPORTANCE ANALYSIS
+        # ==============================================================================
+        with st.container():
+            st.markdown("""
+            <div style='background: white; padding: 30px; border-radius: 15px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+                <h2 style='color: #667eea;'>📊 Step 3: Analisis Feature Importance</h2>
+                <p style='color: #6b7280;'>
+                    Melihat feature mana yang paling berpengaruh terhadap kepuasan pelanggan.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        try:
+            feature_importances = pd.Series(model.feature_importances_, index=feature_names)
+            matched_importances = feature_importances[[mf for mf in mapping_detail.keys() if mf in feature_names]]
+            matched_importances = matched_importances / matched_importances.sum()
+            
+            st.session_state.analysis_done = True
+            
+            top_n = min(10, len(matched_importances))
+            top_features = matched_importances.nlargest(top_n)
+            
+            col1, col2 = st.columns([3, 2])
+            
+            with col1:
+                import plotly.graph_objects as go
+                
+                fig = go.Figure(go.Bar(
+                    x=top_features.values,
+                    y=top_features.index,
+                    orientation='h',
+                    marker=dict(
+                        color=top_features.values,
+                        colorscale='Viridis',
+                        showscale=True,
+                        colorbar=dict(title="Importance")
+                    ),
+                    text=[f'{v:.1%}' for v in top_features.values],
+                    textposition='auto'
+                ))
+                
+                fig.update_layout(
+                    title=f"🏆 Top {top_n} Most Important Features",
+                    xaxis_title="Normalized Importance",
+                    yaxis_title="Features",
+                    height=500,
+                    showlegend=False,
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col2:
+                st.markdown("""
+                <div style='background: #f8f9ff; padding: 20px; border-radius: 10px;'>
+                    <h4 style='color: #667eea;'>💡 Insight</h4>
+                    <p style='color: #4b5563; font-size: 14px; line-height: 1.6;'>
+                        Feature dengan importance tertinggi adalah faktor yang paling 
+                        mempengaruhi kepuasan pelanggan di restoran Anda.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Top 3 features dengan penjelasan
+                st.markdown("<br>", unsafe_allow_html=True)
+                for idx, (feat, imp) in enumerate(top_features.head(3).items(), 1):
+                    st.markdown(f"""
+                    <div style='background: white; padding: 15px; border-radius: 8px; 
+                                margin-bottom: 10px; border-left: 4px solid #667eea;'>
+                        <strong style='color: #667eea;'>#{idx} {feat}</strong><br>
+                        <span style='color: #10b981; font-size: 18px; font-weight: bold;'>
+                            {imp:.1%}
+                        </span>
+                        <span style='color: #6b7280; font-size: 12px;'> importance</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+            feature_importance_dict = matched_importances.to_dict()
+            
+        except Exception as e:
+            st.error(f"❌ Error menganalisis feature importance: {str(e)}")
+            st.stop()
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # ==============================================================================
+        # STEP 4: TOPSIS ANALYSIS & RECOMMENDATIONS
+        # ==============================================================================
+        with st.container():
+            st.markdown("""
+            <div style='background: white; padding: 30px; border-radius: 15px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+                <h2 style='color: #667eea;'>🎯 Step 4: Analisis TOPSIS & Rekomendasi</h2>
+                <p style='color: #6b7280;'>
+                    Mendapatkan ranking strategi bisnis terbaik menggunakan metode TOPSIS.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        strategy_mapping = get_strategy_feature_mapping()
+        
+        with st.spinner("🔄 Menghitung ranking strategi..."):
+            decision_matrix, weights, criteria_types = build_topsis_matrix(
+                list(matched_importances.index),
+                feature_importance_dict,
+                strategy_mapping
+            )
+        
+        if decision_matrix is None:
+            st.error("❌ Tidak ada strategi yang cocok dengan features yang terdeteksi.")
+            st.stop()
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            create_metric_card(
+                "Total Strategi",
+                f"{len(decision_matrix)}",
+                icon="🎯"
+            )
+        
+        with col2:
+            create_metric_card(
+                "Kriteria Evaluasi",
+                f"{len(weights)}",
+                icon="📊"
+            )
+        
+        with col3:
+            create_metric_card(
+                "Features Analyzed",
+                f"{num_matched}",
+                icon="✅"
+            )
+        
+        # Calculate TOPSIS
+        try:
+            topsis_results = calculate_topsis(decision_matrix, weights, criteria_types)
+            st.session_state.results_done = True
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Visualization
+            st.markdown("""
+            <h3 style='color: #667eea;'>📈 Ranking Strategi</h3>
+            """, unsafe_allow_html=True)
+            
+            import plotly.graph_objects as go
+            
+            topsis_sorted = topsis_results.sort_values('Rank').head(10)
+            
+            fig = go.Figure()
+            
+            colors = ['#10b981' if i < 3 else '#667eea' for i in range(len(topsis_sorted))]
+            
+            fig.add_trace(go.Bar(
+                x=topsis_sorted['Closeness_Score'],
+                y=topsis_sorted.index,
+                orientation='h',
+                marker=dict(
+                    color=colors,
+                    line=dict(color='white', width=2)
+                ),
+                text=[f"Rank {r}" for r in topsis_sorted['Rank']],
+                textposition='auto'
+            ))
+            
+            fig.update_layout(
+                title="🏆 Top 10 Strategi Rekomendasi",
+                xaxis_title="Closeness Score (semakin tinggi semakin baik)",
+                yaxis_title="",
+                height=600,
+                showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)'
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # TOP 3 RECOMMENDATIONS dengan style yang lebih menarik
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("""
+            <h3 style='color: #667eea;'>🏆 Top 3 Rekomendasi Strategi Terbaik</h3>
+            <p style='color: #6b7280;'>Strategi-strategi ini paling cocok dengan profil pelanggan Anda</p>
+            """, unsafe_allow_html=True)
+            
+            top_3 = topsis_results.head(3)
+            
+            medals = ["🥇", "🥈", "🥉"]
+            colors_top = ["#ffd700", "#c0c0c0", "#cd7f32"]
+            
+            for idx, ((strategy, row), medal, color) in enumerate(zip(top_3.iterrows(), medals, colors_top)):
+                with st.expander(f"{medal} Rank {idx+1}: {strategy}", expanded=(idx==0)):
+                    col1, col2 = st.columns([1, 3])
+                    
+                    with col1:
+                        st.markdown(f"""
+                        <div style='background: linear-gradient(135deg, {color} 0%, {color}dd 100%); 
+                                    padding: 30px; border-radius: 15px; text-align: center; color: white;'>
+                            <div style='font-size: 48px;'>{medal}</div>
+                            <div style='font-size: 32px; font-weight: bold; margin: 15px 0;'>
+                                {row['Closeness_Score']:.4f}
+                            </div>
+                            <div style='font-size: 14px;'>Closeness Score</div>
+                            <div style='font-size: 48px; font-weight: bold; margin-top: 20px;'>
+                                #{int(row['Rank'])}
+                            </div>
+                            <div style='font-size: 14px;'>Ranking</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col2:
+                        st.markdown("#### 📋 Deskripsi Strategi")
+                        st.info(strategy_mapping[strategy]['description'])
+                        
+                        st.markdown("#### 🎯 Langkah Implementasi")
+                        implementation_steps = strategy_mapping[strategy]['implementation']
+                        
+                        for step_idx, step in enumerate(implementation_steps, 1):
+                            st.markdown(f"""
+                            <div style='background: #f8f9ff; padding: 10px; border-radius: 5px; 
+                                        margin-bottom: 8px; border-left: 3px solid #667eea;'>
+                                <strong style='color: #667eea;'>{step_idx}.</strong> 
+                                <span style='color: #4b5563;'>{step}</span>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                        st.markdown("#### 📊 Features yang Relevan")
+                        strategy_features = strategy_mapping[strategy]['features']
+                        matched_strategy_features = {f: w for f, w in strategy_features.items() 
+                                                    if f in matched_importances.index}
+                        
+                        if matched_strategy_features:
+                            feat_df = pd.DataFrame([
+                                {
+                                    'Feature': f,
+                                    'Strategy Weight': f"{w:.3f}",
+                                    'Model Importance': f"{feature_importance_dict[f]:.4f}",
+                                    'Combined Score': f"{w * feature_importance_dict[f]:.4f}"
+                                }
+                                for f, w in sorted(matched_strategy_features.items(), 
+                                                key=lambda x: x[1] * feature_importance_dict[x[0]], reverse=True)
+                            ][:5])
+                            
+                            st.dataframe(
+                                feat_df.style.background_gradient(subset=['Combined Score'], cmap='Greens'),
+                                use_container_width=True
+                            )
+        
+        except Exception as e:
+            st.error(f"❌ Error menghitung TOPSIS: {str(e)}")
+            st.stop()
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # ==============================================================================
+        # STEP 5: EXPORT RESULTS
+        # ==============================================================================
+        with st.container():
+            st.markdown("""
+            <div style='background: white; padding: 30px; border-radius: 15px; 
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+                <h2 style='color: #667eea;'>💾 Step 5: Export Hasil Analisis</h2>
+                <p style='color: #6b7280;'>
+                    Download hasil analisis untuk dokumentasi dan presentasi.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.markdown("""
+                <div style='background: #f0f9ff; padding: 20px; border-radius: 10px; text-align: center;'>
+                    <div style='font-size: 48px; margin-bottom: 10px;'>📊</div>
+                    <h4 style='color: #667eea;'>TOPSIS Results</h4>
+                    <p style='color: #6b7280; font-size: 14px;'>Ranking lengkap semua strategi</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                csv_topsis = topsis_results.to_csv()
+                st.download_button(
+                    "⬇️ Download CSV",
+                    csv_topsis,
+                    "topsis_results.csv",
+                    "text/csv",
                     use_container_width=True
                 )
             
             with col2:
-                best_strategy = results_df.index[0]
-                best_score = results_df.loc[best_strategy, 'Closeness_Score']
+                st.markdown("""
+                <div style='background: #f0fdf4; padding: 20px; border-radius: 10px; text-align: center;'>
+                    <div style='font-size: 48px; margin-bottom: 10px;'>🎯</div>
+                    <h4 style='color: #10b981;'>Decision Matrix</h4>
+                    <p style='color: #6b7280; font-size: 14px;'>Matrix keputusan TOPSIS</p>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                st.metric(
-                    "🥇 Strategi Terbaik",
-                    f"Rank {results_df.loc[best_strategy, 'Rank']}",
-                    delta=f"Score: {best_score:.4f}"
+                csv_matrix = decision_matrix.to_csv()
+                st.download_button(
+                    "⬇️ Download CSV",
+                    csv_matrix,
+                    "decision_matrix.csv",
+                    "text/csv",
+                    use_container_width=True
                 )
-                
-                st.success(f"**{best_strategy}**")
-                
-                st.markdown("**Top 3 Strategi:**")
-                for idx, (strat, row) in enumerate(results_df.head(3).iterrows(), 1):
-                    medal = ["🥇", "🥈", "🥉"][idx-1]
-                    st.write(f"{medal} {strat} ({row['Closeness_Score']:.4f})")
             
-            # Rekomendasi Aksi
-            st.divider()
-            st.subheader("💡 Rekomendasi Aksi")
-            
-            top3 = results_df.head(3)
-            
-            recommendations = {
-                "A1": "• Pelatihan staf customer service\n• Implementasi sistem feedback real-time\n• Optimasi proses reservasi",
-                "A2": "• Tingkatkan kualitas bahan baku\n• Standardisasi resep dan penyajian\n• Kontrol kualitas berkelanjutan",
-                "A3": "• Optimasi workflow dapur\n• Upgrade sistem POS\n• Manajemen antrian yang lebih baik",
-                "A4": "• Program loyalty rewards\n• Personalisasi komunikasi\n• Exclusive member benefits",
-                "A5": "• Renovasi interior\n• Protokol kebersihan ketat\n• Ambience lighting dan musik",
-                "A6": "• Review pricing strategy\n• Program promosi targeted\n• Value meal packages"
-            }
-            
-            for idx, (strat, row) in enumerate(top3.iterrows(), 1):
-                strategy_id = strat.split(':')[0]
-                with st.expander(f"**#{idx} - {strat}** (Score: {row['Closeness_Score']:.4f})", expanded=(idx==1)):
-                    st.markdown(recommendations.get(strategy_id, "Implementasikan strategi ini dengan fokus pada features teridentifikasi."))
-            
-            # Interpretasi
-            with st.expander("📖 Cara Membaca Hasil", expanded=False):
-                st.markdown(f"""
-                ### Interpretasi Skor TOPSIS:
-                - **Closeness Score**: 0-1, semakin mendekati 1 semakin optimal
-                - **Rank**: Urutan strategi dari terbaik ke kurang optimal
+            with col3:
+                st.markdown("""
+                <div style='background: #fef3c7; padding: 20px; border-radius: 10px; text-align: center;'>
+                    <div style='font-size: 48px; margin-bottom: 10px;'>🔗</div>
+                    <h4 style='color: #f59e0b;'>Feature Mapping</h4>
+                    <p style='color: #6b7280; font-size: 14px;'>Pemetaan kolom dataset</p>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                ### Metodologi:
-                1. Dataset dianalisis dan di-mapping ke {num_matched} features model
-                2. Bobot dihitung dari feature importance model ML
-                3. TOPSIS mengevaluasi jarak setiap strategi ke kondisi ideal
-                4. Strategi dengan closeness score tertinggi = paling optimal
-                
-                ### Feature Types:
-                - **Benefit** ({type_counts['Benefit']} features): Nilai tinggi lebih baik
-                - **Cost** ({type_counts['Cost']} features): Nilai rendah lebih baik
-                
-                ### Features Teridentifikasi:
-                {', '.join(matched_features[:10])}{"..." if len(matched_features) > 10 else ""}
-                """)
+                mapping_df = pd.DataFrame([
+                    {'Model Feature': k, 'Dataset Column': v}
+                    for k, v in mapping_detail.items()
+                ])
+                csv_mapping = mapping_df.to_csv(index=False)
+                st.download_button(
+                    "⬇️ Download CSV",
+                    csv_mapping,
+                    "feature_mapping.csv",
+                    "text/csv",
+                    use_container_width=True
+                )
     
-    else:
-        st.info("👆 Upload dataset CSV untuk memulai analisis")
+    # ==============================================================================
+    # USER GUIDE PAGE
+    # ==============================================================================
+    elif page == "📖 User Guide":
+        st.markdown("<br>", unsafe_allow_html=True)
+        show_user_guide()
+    
+    # ==============================================================================
+    # ANALYSIS DASHBOARD PAGE
+    # ==============================================================================
+    elif page == "📊 Analysis Dashboard":
+        st.markdown("""
+        <div style='text-align: center; padding: 40px 0;'>
+            <h1 style='font-size: 48px;'>📊 Analysis Dashboard</h1>
+            <p style='font-size: 20px; color: rgba(255,255,255,0.9);'>
+                Summary lengkap dari hasil analisis
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Tampilkan contoh format
-        with st.expander("📋 Contoh Format Dataset", expanded=False):
-            st.markdown("""
-            Dataset Anda harus memiliki kolom yang match dengan features model. Contoh kolom yang umum:
+        if 'df' not in st.session_state:
+            st.warning("⚠️ Belum ada data yang di-upload. Silakan upload dataset terlebih dahulu di halaman Home.")
+            st.stop()
+        
+        # Summary Statistics
+        st.markdown("""
+        <div style='background: white; padding: 30px; border-radius: 15px; 
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+            <h2 style='color: #667eea;'>📈 Summary Statistics</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        df = st.session_state.df
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            create_metric_card("Total Records", f"{len(df):,}", icon="📊")
+        
+        with col2:
+            create_metric_card("Total Columns", f"{len(df.columns)}", icon="📋")
+        
+        with col3:
+            if 'num_matched' in st.session_state:
+                create_metric_card("Matched Features", f"{st.session_state.num_matched}", icon="✅")
+            else:
+                create_metric_card("Matched Features", "N/A", icon="❓")
+        
+        with col4:
+            missing_pct = (df.isnull().sum().sum() / (len(df) * len(df.columns)) * 100)
+            create_metric_card("Missing Data", f"{missing_pct:.1f}%", icon="⚠️")
+        
+        # Data Quality Check
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style='background: white; padding: 30px; border-radius: 15px; 
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;'>
+            <h2 style='color: #667eea;'>🔍 Data Quality Check</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### Missing Values per Column")
+            missing_df = pd.DataFrame({
+                'Column': df.columns,
+                'Missing': df.isnull().sum().values,
+                'Percentage': (df.isnull().sum().values / len(df) * 100)
+            }).sort_values('Missing', ascending=False)
             
-            **Service Quality:**
-            - ServiceRating, FoodRating, AmbianceRating
-            - WaitTime, AvgRating, TotalRating
+            missing_df = missing_df[missing_df['Missing'] > 0]
             
-            **Visit Behavior:**
-            - VisitFrequency, AverageSpend, GroupSize
-            - DiningOccasion, MealType
+            if len(missing_df) > 0:
+                st.dataframe(
+                    missing_df.style.background_gradient(subset=['Percentage'], cmap='Reds'),
+                    use_container_width=True
+                )
+            else:
+                st.success("✅ Tidak ada missing values!")
+        
+        with col2:
+            st.markdown("#### Data Types")
+            dtype_counts = df.dtypes.value_counts()
             
-            **Customer Status:**
-            - LoyaltyProgramMember, OnlineReservation
-            - DeliveryOrder, LoyalCustomer
-            """)
+            import plotly.graph_objects as go
             
-            example_df = pd.DataFrame({
-                'CustomerID': [1, 2, 3],
-                'ServiceRating': [4.5, 3.8, 4.2],
-                'FoodRating': [4.0, 4.5, 3.9],
-                'AmbianceRating': [4.2, 3.5, 4.0],
-                'WaitTime': [15, 25, 10],
-                'AverageSpend': [50000, 75000, 45000],
-                'VisitFrequency': [5, 12, 3],
-                'LoyaltyProgramMember': [1, 1, 0]
-            })
-            st.dataframe(example_df, use_container_width=True)
+            fig = go.Figure(go.Pie(
+                labels=dtype_counts.index.astype(str),
+                values=dtype_counts.values,
+                hole=0.4
+            ))
+            
+            fig.update_layout(
+                title="Distribution of Data Types",
+                height=400
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Descriptive Statistics
+        st.markdown("<br>", unsafe_allow_html=True)
+        with st.expander("📊 Descriptive Statistics", expanded=False):
+            st.dataframe(df.describe(), use_container_width=True)
+    
+    # ==============================================================================
+    # ABOUT PAGE
+    # ==============================================================================
+    elif page == "ℹ️ About":
+        st.markdown("<br>", unsafe_allow_html=True)
+        show_about()
 
 if __name__ == '__main__':
     main()
