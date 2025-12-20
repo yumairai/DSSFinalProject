@@ -1129,7 +1129,7 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Quarterly review: strategic evaluation of improvement impact'
         ]
     },
-
+    
     # ========== G. STRATEGI BERBASIS RESERVASI & ONLINE BEHAVIOR ==========
     
     "G1: App-exclusive Deals": {
