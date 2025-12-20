@@ -5,3 +5,4 @@ joblib
 rapidfuzz
 fuzzywuzzy
 python-Levenshtein
+xgboost
