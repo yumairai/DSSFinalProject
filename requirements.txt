@@ -6,3 +6,4 @@ rapidfuzz
 fuzzywuzzy
 python-Levenshtein
 xgboost
+plotly
