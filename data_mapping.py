@@ -1145,25 +1145,26 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Age': 0.02,
             'YoungCustomer': 0.00
         },
-        'description': '''Exclusive promotions, discounts, dan benefits yang hanya available untuk 
-        customers yang download dan use mobile app. Ini incentivize app adoption yang memberikan 
-        restoran valuable data, direct communication channel, dan reduced dependency on third-party 
-        platforms. App users typically have higher lifetime value dan engagement. Offers designed 
-        untuk be compelling enough untuk drive app downloads.''',
+        'description': '''Promosi, diskon, dan keuntungan eksklusif yang hanya tersedia bagi pelanggan 
+        yang mengunduh dan menggunakan aplikasi mobile. Strategi ini mendorong adopsi aplikasi yang 
+        memberikan restoran data pelanggan yang bernilai, kanal komunikasi langsung, serta mengurangi 
+        ketergantungan pada platform pihak ketiga. Pengguna aplikasi umumnya memiliki nilai dan 
+        keterlibatan pelanggan yang lebih tinggi. Penawaran dirancang cukup menarik untuk mendorong 
+        unduhan aplikasi.''',
         'implementation': [
-            'Welcome offer: 25% off untuk first order via app',
-            'Weekly app-only deals: different special setiap minggu',
-            'Flash sales: limited-time offers pushed via app notification',
-            'Early access: app users get first dibs pada seasonal menu',
-            'Extra loyalty points: earn 2x points untuk app orders',
-            'Free delivery: waived delivery fee untuk app orders',
-            'Birthday special: exclusive birthday discount via app',
-            'Gamification: spin the wheel, scratch card untuk random rewards',
-            'Referral rewards: share app dengan teman dapat bonus',
-            'Push notifications: personalized offers based pada user behavior'
+            'Welcome offer: diskon 25% untuk pesanan pertama melalui aplikasi',
+            'Weekly app-only deals: promo spesial berbeda setiap minggu',
+            'Flash sales: penawaran terbatas yang dikirim melalui notifikasi aplikasi',
+            'Early access: pengguna aplikasi mendapat akses awal menu musiman',
+            'Extra loyalty points: mendapatkan 2x poin untuk pemesanan via aplikasi',
+            'Free delivery: bebas ongkir untuk pesanan melalui aplikasi',
+            'Birthday special: diskon ulang tahun eksklusif melalui aplikasi',
+            'Gamification: spin the wheel dan scratch card untuk hadiah acak',
+            'Referral rewards: bagikan aplikasi ke teman untuk mendapatkan bonus',
+            'Push notifications: penawaran personal berdasarkan perilaku pengguna'
         ]
     },
-    
+
     "G2: Delivery Loyalty Program": {
         'features': {
             'DeliveryOrder': 0.30,
@@ -1177,24 +1178,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Rating_x_Frequency': 0.01,
             'Spend_x_Rating': 0.00
         },
-        'description': '''Dedicated loyalty program specifically untuk delivery customers dengan benefits 
-        seperti free delivery, priority fulfillment, dan exclusive delivery-only menu items. Delivery 
-        customers have different behaviors dan needs dari dine-in customers, sehingga deserve 
-        specialized program. Encourage repeat delivery orders dan increase basket size.''',
+        'description': '''Program loyalitas khusus bagi pelanggan layanan pesan antar dengan manfaat 
+        seperti gratis ongkir, prioritas pengiriman, dan menu eksklusif khusus delivery. Pelanggan 
+        delivery memiliki perilaku dan kebutuhan yang berbeda dibandingkan pelanggan dine-in sehingga 
+        memerlukan program tersendiri. Program ini bertujuan meningkatkan frekuensi pemesanan ulang dan 
+        nilai transaksi.''',
         'implementation': [
-            'Delivery tiers: Bronze (free delivery 1x/week), Silver (3x/week), Gold (unlimited)',
-            'Tier qualification: Bronze (4 orders/month), Silver (8), Gold (12)',
-            'Priority delivery: Gold members get faster delivery slots',
-            'Exclusive items: special delivery-only menu untuk members',
-            'Packaging upgrade: premium packaging untuk loyalty members',
-            'Order tracking: real-time tracking dengan ETA updates',
-            'Delivery insurance: guarantee fresh arrival atau replacement',
-            'Contactless delivery: prioritized untuk member safety',
-            'Scheduled delivery: book delivery up to 3 days advance',
-            'Group order: combine orders dari multiple addresses untuk free delivery'
+            'Delivery tiers: Bronze (gratis ongkir 1x/minggu), Silver (3x/minggu), Gold (tanpa batas)',
+            'Tier qualification: Bronze (4 pesanan/bulan), Silver (8), Gold (12)',
+            'Priority delivery: anggota Gold mendapat slot pengiriman lebih cepat',
+            'Exclusive items: menu khusus delivery untuk anggota',
+            'Packaging upgrade: kemasan premium untuk anggota loyalitas',
+            'Order tracking: pelacakan real-time dengan estimasi waktu tiba',
+            'Delivery insurance: jaminan makanan tiba segar atau diganti',
+            'Contactless delivery: prioritas pengiriman tanpa kontak',
+            'Scheduled delivery: pemesanan pengiriman hingga 3 hari sebelumnya',
+            'Group order: gabungkan pesanan dari beberapa alamat untuk gratis ongkir'
         ]
     },
-    
+
     "G3: Pre-reserve dengan Deposit": {
         'features': {
             'OnlineReservation': 0.28,
@@ -1208,24 +1210,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'ServiceRating': 0.01,
             'LoyaltyProgramMember': 0.00
         },
-        'description': '''System untuk reserve tables dengan deposit yang convertible ke discount atau 
-        menu credit. Ini reduce no-shows yang costly untuk restoran, especially untuk peak times 
-        dan large groups. Deposit amount reasonable dan fully redeemable, jadi tidak punitive. 
-        Customer benefit dari guaranteed seating dan possible extra perks. Win-win solution.''',
+        'description': '''Sistem reservasi meja dengan deposit yang dapat dikonversi menjadi diskon atau 
+        kredit menu. Pendekatan ini mengurangi risiko pembatalan mendadak yang merugikan restoran, 
+        terutama pada jam sibuk dan reservasi kelompok besar. Nilai deposit bersifat wajar dan dapat 
+        digunakan sepenuhnya, sehingga tidak bersifat merugikan pelanggan. Pelanggan memperoleh 
+        kepastian tempat duduk dan keuntungan tambahan, menciptakan solusi saling menguntungkan.''',
         'implementation': [
-            'Deposit amount: Rp 50k/pax untuk regular hours, Rp 100k untuk peak hours',
-            'Full redeemable: deposit converts to bill credit atau discount',
-            'Bonus incentive: deposit + Rp 20k bonus credit (essentially 40% bonus)',
-            'Easy payment: pay deposit via app, e-wallet, transfer',
-            'Instant confirmation: immediate booking confirmation setelah deposit',
-            'Flexible cancellation: full refund jika cancel 24h before',
-            'Guaranteed seating: table reserved regardless of walk-in crowd',
-            'Preferred seating: option untuk request specific table area',
-            'Pre-order option: order menu in advance dengan deposit',
-            'Group friendly: simplified deposit collection untuk large groups'
+            'Deposit amount: Rp 50k/pax untuk jam normal, Rp 100k untuk jam sibuk',
+            'Full redeemable: deposit dapat digunakan sebagai potongan tagihan',
+            'Bonus incentive: deposit + bonus kredit Rp 20k',
+            'Easy payment: pembayaran deposit melalui aplikasi, e-wallet, atau transfer',
+            'Instant confirmation: konfirmasi reservasi otomatis setelah deposit',
+            'Flexible cancellation: pengembalian penuh jika dibatalkan 24 jam sebelumnya',
+            'Guaranteed seating: meja tetap tersedia meskipun restoran ramai',
+            'Preferred seating: opsi memilih area meja tertentu',
+            'Pre-order option: pesan menu lebih awal menggunakan deposit',
+            'Group friendly: pengelolaan deposit yang mudah untuk kelompok besar'
         ]
     },
-    
+
     "G4: AI Menu Recommendation": {
         'features': {
             'OnlineUser': 0.25,
@@ -1239,25 +1242,24 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'DeliveryOrder': 0.02,
             'LoyaltyProgramMember': 0.00
         },
-        'description': '''Machine learning powered recommendation engine yang analyze customer order 
-        history, ratings, preferences, dan behavioral patterns untuk suggest menu items they'll 
-        likely love. Recommendations become more accurate over time dengan more data. Helps customers 
-        discover new items they might not try otherwise. Increase satisfaction dan cross-selling 
-        opportunities.''',
+        'description': '''Mesin rekomendasi berbasis machine learning yang menganalisis riwayat pesanan, 
+        penilaian, preferensi, dan pola perilaku pelanggan untuk menyarankan menu yang berpotensi 
+        disukai. Akurasi rekomendasi akan meningkat seiring bertambahnya data. Sistem ini membantu 
+        pelanggan menemukan menu baru sekaligus meningkatkan kepuasan dan peluang penjualan silang.''',
         'implementation': [
-            'Personalized homepage: "Recommended for you" section di app',
-            'Smart search: prioritize items customer likely to enjoy',
-            '"Try something new": suggest items outside usual preference untuk discovery',
-            'Collaborative filtering: "Customers like you also enjoyed..."',
-            'Dietary preferences: remember dan filter by dietary restrictions',
-            'Occasion-based: different suggestions untuk lunch vs dinner, weekday vs weekend',
-            'Weather-aware: suggest comfort food in rainy days, refreshing items when hot',
-            'Trending items: highlight popular items dengan similar customers',
-            'Rating prediction: show predicted rating customer will give to item',
-            'One-click reorder: easy to reorder past favorites'
+            'Personalized homepage: bagian "Recommended for you" di aplikasi',
+            'Smart search: memprioritaskan menu yang kemungkinan disukai pelanggan',
+            '"Try something new": rekomendasi menu di luar preferensi biasa',
+            'Collaborative filtering: "Pelanggan seperti Anda juga menyukai..."',
+            'Dietary preferences: menyimpan dan memfilter preferensi diet',
+            'Occasion-based: rekomendasi berbeda untuk makan siang/malam',
+            'Weather-aware: rekomendasi menu sesuai kondisi cuaca',
+            'Trending items: menampilkan menu populer dari pelanggan serupa',
+            'Rating prediction: estimasi rating yang mungkin diberikan pelanggan',
+            'One-click reorder: pemesanan ulang favorit dengan satu klik'
         ]
     },
-    
+
     "G5: Gamification Rewards": {
         'features': {
             'OnlineUser': 0.25,
@@ -1271,25 +1273,24 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Age': 0.01,
             'YoungCustomer': 0.00
         },
-        'description': '''Gamified loyalty program dengan elements seperti badges, achievements, 
-        leaderboards, challenges, dan quests. Make earning rewards fun dan engaging beyond 
-        transactional relationship. Particularly effective dengan millennials dan Gen Z. Create 
-        emotional connection dan sense of accomplishment. Drive specific behaviors through 
-        targeted challenges.''',
+        'description': '''Program loyalitas berbasis gamifikasi dengan elemen seperti lencana, pencapaian, 
+        papan peringkat, tantangan, dan misi. Pendekatan ini membuat proses mendapatkan hadiah menjadi 
+        lebih menyenangkan dan tidak sekadar transaksional. Sangat efektif untuk generasi milenial dan 
+        Gen Z serta membangun keterikatan emosional pelanggan.''',
         'implementation': [
-            'Achievement badges: "Early Bird" (5 breakfast orders), "Night Owl" (5 dinner after 20:00)',
-            'Daily quests: complete challenge untuk bonus points (e.g. "Try new item today")',
-            'Streak rewards: consecutive days/weeks visiting untuk multiplier bonus',
-            'Leaderboard: monthly top spenders/visitors dengan exclusive prizes',
-            'Limited edition badges: seasonal atau event-specific achievements',
-            'Point multiplier: special days dengan 2x, 3x, 5x points',
-            'Surprise rewards: random spin-the-wheel opportunities',
-            'Social sharing: share achievements di social media untuk extra points',
-            'Progress bars: visual progress toward next reward unlock',
-            'Tier progression: level up system dengan increasing benefits'
+            'Achievement badges: contoh "Early Bird" dan "Night Owl"',
+            'Daily quests: tantangan harian untuk bonus poin',
+            'Streak rewards: bonus untuk kunjungan berturut-turut',
+            'Leaderboard: peringkat bulanan dengan hadiah eksklusif',
+            'Limited edition badges: lencana khusus musiman atau event',
+            'Point multiplier: hari tertentu dengan kelipatan poin',
+            'Surprise rewards: hadiah acak melalui spin-the-wheel',
+            'Social sharing: berbagi pencapaian untuk poin tambahan',
+            'Progress bars: visualisasi progres menuju hadiah berikutnya',
+            'Tier progression: sistem level dengan manfaat meningkat'
         ]
     },
-    
+
     "G6: Predictive Menu Alerts": {
         'features': {
             'OnlineUser': 0.25,
@@ -1303,23 +1304,24 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'TimeOfVisit': 0.02,
             'AverageSpend': 0.00
         },
-        'description': '''Proactive notification system yang remind customers tentang favorite menu 
-        items, alert ketika favorite menu available lagi (untuk seasonal items), dan suggest 
-        optimal time untuk visit based on their patterns. Personalized dan timely communication 
-        yang adds value tanpa being spammy. Uses AI untuk predict when customer likely mau order.''',
+        'description': '''Sistem notifikasi proaktif yang mengingatkan pelanggan tentang menu favorit, 
+        memberi pemberitahuan ketika menu musiman kembali tersedia, serta menyarankan waktu kunjungan 
+        optimal berdasarkan pola perilaku pelanggan. Komunikasi bersifat personal, relevan, dan tidak 
+        berlebihan dengan memanfaatkan prediksi AI.''',
         'implementation': [
-            'Favorite alert: "Your favorite Truffle Pasta is back!" untuk seasonal returns',
-            'Craving predictor: "It\'s been 2 weeks since your last burger, craving one?"',
-            'Time-based reminder: "Usually you visit on Friday lunch, special offer today!"',
-            'New item match: "New item that matches your taste profile available"',
-            'Weather-triggered: "Perfect rainy day untuk hot soup and comfort food"',
-            'Optimal visit time: "Usually less crowded at 14:00-16:00 today"',
-            'Promo match: "25% off your favorite category this week"',
-            'Re-order suggestion: "Quick reorder your usual?" dengan one-tap order',
-            'Limited availability: "Only 5 servings left today of..."',
-            'Smart frequency: adjust notification frequency based pada engagement'
+            'Favorite alert: notifikasi kembalinya menu favorit',
+            'Craving predictor: pengingat berdasarkan jeda pemesanan',
+            'Time-based reminder: rekomendasi waktu kunjungan favorit',
+            'New item match: menu baru sesuai preferensi pelanggan',
+            'Weather-triggered: rekomendasi menu sesuai cuaca',
+            'Optimal visit time: informasi jam kunjungan yang lebih sepi',
+            'Promo match: promo sesuai kategori favorit pelanggan',
+            'Re-order suggestion: pemesanan ulang cepat dengan satu klik',
+            'Limited availability: pemberitahuan stok terbatas',
+            'Smart frequency: frekuensi notifikasi menyesuaikan respons pengguna'
         ]
     },
+
 
     # ========== H. STRATEGI BERBASIS GROUP BEHAVIOR ==========
     
@@ -1336,25 +1338,26 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'MealType': 0.01,
             'VisitFrequency': 0.00
         },
-        'description': '''Specialized packages untuk groups of 4 or more dengan bundled pricing, 
-        sharing menu options, dan dedicated service. Group dining profitable due to higher total 
-        spend dan efficiency. Packages designed untuk different group types: family gatherings, 
-        office celebrations, friend reunions. Include benefits seperti private/semi-private seating, 
-        customizable menu, dan streamlined ordering.''',
+        'description': '''Paket khusus untuk kelompok berisi empat orang atau lebih dengan harga bundling, 
+        menu berbagi, dan layanan khusus. Makan bersama dalam kelompok cenderung lebih menguntungkan 
+        karena total pengeluaran yang lebih tinggi dan efisiensi layanan. Paket dirancang untuk berbagai 
+        jenis kelompok seperti acara keluarga, perayaan kantor, dan pertemuan teman. Fasilitas meliputi 
+        area duduk privat atau semi-privat, menu yang dapat disesuaikan, serta proses pemesanan yang 
+        lebih terstruktur.''',
         'implementation': [
-            '"Family Feast" (4-6 pax): Rp 300k complete meal dengan variety',
-            '"Party Pack" (8-10 pax): Rp 600k buffet-style dengan unlimited drinks',
-            '"Corporate Package" (10-20 pax): Rp 1.2jt set menu + meeting room',
-            'Sharing platters: large portions designed untuk sharing (ribs, pizza, pasta)',
-            'Set menu: pre-selected courses untuk easy ordering dan service',
-            'Customizable: allow substitutions within package untuk dietary needs',
-            'Group discount: 15-20% off untuk groups 8+, 25% untuk 15+',
-            'Private seating: sectioned area atau private room untuk larger groups',
-            'Dedicated server: single server untuk entire group untuk consistency',
-            'Easy billing: single bill atau flexible split billing options'
+            '"Family Feast" (4-6 pax): Rp 300k paket makan lengkap dengan variasi menu',
+            '"Party Pack" (8-10 pax): Rp 600k konsep buffet dengan minuman tanpa batas',
+            '"Corporate Package" (10-20 pax): Rp 1.2jt set menu + ruang pertemuan',
+            'Sharing platters: porsi besar untuk berbagi seperti ribs, pizza, dan pasta',
+            'Set menu: menu paket yang telah ditentukan untuk kemudahan pemesanan',
+            'Customizable: memungkinkan substitusi menu sesuai kebutuhan diet',
+            'Group discount: diskon 15–20% untuk grup 8+, 25% untuk grup 15+',
+            'Private seating: area khusus atau ruang privat untuk kelompok besar',
+            'Dedicated server: satu pramusaji khusus untuk seluruh kelompok',
+            'Easy billing: satu tagihan atau opsi pembagian tagihan yang fleksibel'
         ]
     },
-    
+
     "H2: Solo Diner Comfort": {
         'features': {
             'Solo': 0.30,
@@ -1368,25 +1371,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Age': 0.01,
             'Income': 0.00
         },
-        'description': '''Program untuk make solo diners feel comfortable dan welcome rather than awkward. 
-        Many people hesitant untuk dine alone karena perceived stigma. Creating solo-friendly 
-        environment opens new customer segment. Includes appropriate seating, reading materials, 
-        attentive but not intrusive service, dan special solo menu portions. Solo diners often 
-        become regulars jika treated well.''',
+        'description': '''Program yang dirancang untuk membuat pelanggan yang datang sendiri merasa nyaman 
+        dan diterima. Banyak orang ragu makan sendirian karena stigma sosial, sehingga lingkungan yang 
+        ramah solo membuka segmen pelanggan baru. Program ini mencakup pengaturan tempat duduk yang sesuai, 
+        layanan yang perhatian namun tidak mengganggu, serta porsi menu khusus. Pelanggan solo yang 
+        diperlakukan dengan baik cenderung menjadi pelanggan tetap.''',
         'implementation': [
-            'Solo-friendly seating: bar seats, window counters, small 2-tops',
-            'Reading materials: newspapers, magazines, books available',
-            'Free Wi-Fi: quality internet untuk working diners',
-            'Solo portions: smaller portions at reduced price (60-70% of regular)',
-            'Quick service: recognize solo diners may prefer faster service',
-            'No judgment: staff trained untuk make solo diners feel welcome',
-            '"Solo Special": special menu atau discount untuk solo diners',
-            'Privacy: seating options that provide some privacy/comfort',
-            'Charging ports: power outlets at solo-friendly seats',
-            'Background music: ambient music so silence tidak awkward'
+            'Solo-friendly seating: kursi bar, meja dekat jendela, atau meja kecil',
+            'Reading materials: koran, majalah, dan buku tersedia',
+            'Free Wi-Fi: koneksi internet stabil untuk pelanggan bekerja',
+            'Solo portions: porsi lebih kecil dengan harga 60–70% dari porsi normal',
+            'Quick service: layanan lebih cepat untuk pelanggan solo',
+            'No judgment: pelatihan staf agar ramah terhadap pelanggan solo',
+            '"Solo Special": menu atau diskon khusus untuk pelanggan solo',
+            'Privacy: pilihan tempat duduk dengan tingkat privasi lebih baik',
+            'Charging ports: stop kontak di area duduk pelanggan solo',
+            'Background music: musik latar untuk menciptakan suasana nyaman'
         ]
     },
-    
+
     "H3: Large Group Reservations": {
         'features': {
             'LargeGroup': 0.30,
@@ -1400,25 +1403,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'MealType': 0.00,
             'SpendPerPerson': 0.00
         },
-        'description': '''Dedicated booking system dan special accommodations untuk groups of 10+. 
-        Large groups require different planning, preparation, dan service approach. System allows 
-        advance booking dengan menu pre-selection, table configuration planning, dan special 
-        requests. High-value opportunity karena large groups generate significant revenue in 
-        single seating, but need proper handling.''',
+        'description': '''Sistem reservasi khusus dan fasilitas tambahan untuk kelompok berjumlah sepuluh 
+        orang atau lebih. Kelompok besar memerlukan perencanaan, persiapan, dan pendekatan layanan yang 
+        berbeda. Sistem ini mendukung pemesanan jauh hari dengan pemilihan menu awal, pengaturan meja, 
+        serta permintaan khusus. Kelompok besar merupakan peluang bernilai tinggi karena menghasilkan 
+        pendapatan besar dalam satu kunjungan, namun membutuhkan penanganan yang tepat.''',
         'implementation': [
-            'Advance booking: accept reservations untuk large groups up to 1 month ahead',
-            'Deposit requirement: Rp 50k/pax deposit untuk guarantee booking',
-            'Menu pre-selection: choose menu 48h before untuk kitchen preparation',
-            'Table configuration: custom table arrangement untuk group size/preference',
-            'Private space: dedicated room atau sectioned area untuk privacy',
-            'Dedicated staff: assign specific servers untuk group',
-            'Coordinated service: synchronized food service untuk large groups',
-            'Event coordination: assist dengan decorations, cake, presentations',
-            'Flexible payment: handle split bills atau group billing easily',
-            'Special occasions: accommodate birthdays, celebrations dengan special touches'
+            'Advance booking: reservasi kelompok besar hingga 1 bulan sebelumnya',
+            'Deposit requirement: deposit Rp 50k/pax sebagai jaminan reservasi',
+            'Menu pre-selection: pemilihan menu 48 jam sebelumnya untuk persiapan dapur',
+            'Table configuration: pengaturan meja sesuai ukuran dan preferensi kelompok',
+            'Private space: ruang privat atau area khusus untuk kenyamanan',
+            'Dedicated staff: penugasan staf khusus untuk kelompok',
+            'Coordinated service: penyajian makanan terkoordinasi untuk seluruh kelompok',
+            'Event coordination: bantuan dekorasi, kue, dan presentasi',
+            'Flexible payment: kemudahan pembagian atau penggabungan tagihan',
+            'Special occasions: penanganan khusus untuk ulang tahun atau perayaan'
         ]
     },
-    
+
     "H4: Private Room Service": {
         'features': {
             'LargeGroup': 0.25,
@@ -1432,24 +1435,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'TimeOfVisit': 0.02,
             'MealType': 0.00
         },
-        'description': '''Premium private dining rooms untuk groups yang desire privacy dan exclusivity. 
-        Perfect untuk business meetings, intimate celebrations, atau VIP gatherings. Rooms equipped 
-        dengan AV equipment, comfortable seating, dedicated service, dan customizable ambiance. 
-        Command premium pricing due to exclusivity dan enhanced service. Requires minimum spend 
-        atau room charge.''',
+        'description': '''Ruang makan privat premium untuk kelompok yang menginginkan privasi dan 
+        eksklusivitas. Cocok untuk pertemuan bisnis, perayaan intim, atau acara VIP. Ruangan dilengkapi 
+        dengan fasilitas audiovisual, tempat duduk yang nyaman, layanan khusus, serta suasana yang dapat 
+        disesuaikan. Layanan ini memiliki harga premium karena eksklusivitas dan kualitas layanan, serta 
+        biasanya mensyaratkan minimum pembelanjaan atau biaya ruang.''',
         'implementation': [
-            'Multiple room sizes: Small (4-6 pax), Medium (8-12 pax), Large (15-20 pax)',
-            'Room booking: advance reservation dengan minimum spend requirement',
-            'Minimum spend: Rp 1.5jt (small), Rp 3jt (medium), Rp 5jt (large)',
-            'Equipment: TV/projector, sound system, microphone untuk presentations',
-            'Customizable: adjust lighting, temperature, music untuk preference',
-            'Butler service: dedicated server exclusively untuk the room',
-            'Custom menu: work dengan chef untuk special menu requests',
-            'Privacy: soundproof, separate entrance untuk discretion',
-            'Amenities: whiteboard, WiFi, charging stations, coat rack',
-            'Extended hours: flexible dengan timing, can book beyond regular hours'
+            'Multiple room sizes: kecil (4–6 pax), sedang (8–12 pax), besar (15–20 pax)',
+            'Room booking: reservasi dengan syarat minimum pembelanjaan',
+            'Minimum spend: Rp 1.5jt (kecil), Rp 3jt (sedang), Rp 5jt (besar)',
+            'Equipment: TV/proyektor, sistem suara, mikrofon untuk presentasi',
+            'Customizable: pengaturan pencahayaan, suhu, dan musik sesuai kebutuhan',
+            'Butler service: pramusaji khusus untuk satu ruangan',
+            'Custom menu: kerja sama dengan chef untuk permintaan menu khusus',
+            'Privacy: ruangan kedap suara dan akses terpisah',
+            'Amenities: papan tulis, Wi-Fi, stasiun pengisian daya, gantungan jas',
+            'Extended hours: fleksibilitas waktu di luar jam operasional normal'
         ]
     },
+
 
     # ========== I. STRATEGI BERBASIS OCCASION & MEAL TYPE ==========
     
@@ -1466,24 +1470,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Age': 0.01,
             'Income': 0.00
         },
-        'description': '''Specialized breakfast program untuk capture morning crowd dengan attractive 
-        breakfast combos, quick service, dan morning-appropriate menu. Breakfast crowd typically 
-        time-sensitive dan price-sensitive, so focus on value dan efficiency. Build morning routine 
-        habit dengan consistent quality. Breakfast high-margin due to lower ingredient costs.''',
+        'description': '''Program sarapan khusus untuk menarik pelanggan pagi hari melalui paket sarapan 
+        yang menarik, layanan cepat, dan menu yang sesuai untuk pagi hari. Pelanggan sarapan umumnya 
+        sensitif terhadap waktu dan harga, sehingga fokus pada nilai dan efisiensi layanan. Program ini 
+        bertujuan membangun kebiasaan rutinitas pagi dengan kualitas yang konsisten. Menu sarapan juga 
+        memiliki margin keuntungan yang tinggi karena biaya bahan baku yang relatif rendah.''',
         'implementation': [
-            'Breakfast combo: Rp 25k-45k complete breakfast (main + drink + bread)',
-            'Early bird special: 20% off untuk order sebelum 08:00',
-            'Quick service: guarantee 10-minute service untuk breakfast orders',
-            'Grab & Go: pre-packed breakfast untuk busy commuters',
-            'Coffee deals: unlimited refills untuk breakfast customers',
-            'Healthy options: oatmeal, smoothie bowls, whole grain options',
-            'Business breakfast: meeting-friendly seating dengan power outlets',
-            'Breakfast subscription: monthly breakfast pass untuk regulars',
-            'Weekend brunch: special expanded menu Sat-Sun 08:00-14:00',
-            'Loyalty: breakfast stamp card - buy 10 get 1 free'
+            'Breakfast combo: Rp 25k–45k paket sarapan lengkap (menu utama + minuman + roti)',
+            'Early bird special: diskon 20% untuk pemesanan sebelum pukul 08.00',
+            'Quick service: jaminan penyajian maksimal 10 menit untuk menu sarapan',
+            'Grab & Go: sarapan siap ambil untuk pelanggan yang terburu-buru',
+            'Coffee deals: isi ulang kopi gratis untuk pelanggan sarapan',
+            'Healthy options: oatmeal, smoothie bowl, dan menu gandum utuh',
+            'Business breakfast: area duduk ramah meeting dengan stop kontak',
+            'Breakfast subscription: paket langganan sarapan bulanan',
+            'Weekend brunch: menu spesial akhir pekan pukul 08.00–14.00',
+            'Loyalty: kartu stempel sarapan – beli 10 gratis 1'
         ]
     },
-    
+
     "I2: Romantic Dinner Experience": {
         'features': {
             'DiningOccasion': 0.30,
@@ -1497,25 +1502,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'FoodRating': 0.01,
             'Solo': 0.00
         },
-        'description': '''Premium romantic dining package untuk couples celebrating special occasions 
-        atau seeking intimate dining experience. Focus on ambiance, privacy, dan special touches 
-        that create memorable moments. Higher price point justified by enhanced experience. 
-        Popular untuk anniversaries, proposals, Valentine, atau date nights. Requires reservation 
-        dan allows customization.''',
+        'description': '''Paket makan malam romantis premium untuk pasangan yang merayakan momen spesial 
+        atau menginginkan pengalaman bersantap yang intim. Fokus utama pada suasana, privasi, dan 
+        sentuhan khusus yang menciptakan kenangan berkesan. Harga yang lebih tinggi sebanding dengan 
+        pengalaman eksklusif yang diberikan. Program ini populer untuk perayaan ulang tahun pernikahan, 
+        lamaran, Hari Valentine, atau kencan malam, serta memerlukan reservasi dan mendukung kustomisasi.''',
         'implementation': [
-            'Romantic package: Rp 500k-800k untuk couple dengan multi-course meal',
-            'Private booth: intimate 2-person seating dengan curtain/divider',
-            'Mood lighting: dimmed lighting, candles pada table',
-            'Special setup: rose petals, personalized menu cards',
-            'Wine pairing: sommelier recommendation untuk each course',
-            'Live music: soft acoustic atau pianist pada certain nights',
-            'Photo service: complimentary couple photo dengan Polaroid',
-            'Surprise coordination: help plan proposals atau special surprises',
-            'Dessert special: complimentary champagne dengan dessert',
-            'Extended seating: no rush, enjoy evening at your pace'
+            'Romantic package: Rp 500k–800k untuk pasangan dengan menu multi-hidangan',
+            'Private booth: tempat duduk intim untuk dua orang dengan tirai atau sekat',
+            'Mood lighting: pencahayaan redup dan lilin di meja',
+            'Special setup: taburan kelopak mawar dan kartu menu personal',
+            'Wine pairing: rekomendasi wine oleh sommelier untuk setiap hidangan',
+            'Live music: musik akustik atau piano pada malam tertentu',
+            'Photo service: foto pasangan gratis menggunakan kamera Polaroid',
+            'Surprise coordination: bantuan perencanaan lamaran atau kejutan khusus',
+            'Dessert special: champagne gratis bersama hidangan penutup',
+            'Extended seating: waktu makan fleksibel tanpa terburu-buru'
         ]
     },
-    
+
     "I3: Time-based Specials": {
         'features': {
             'TimeOfVisit': 0.30,
@@ -1529,24 +1534,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'GroupSize': 0.01,
             'ServiceRating': 0.00
         },
-        'description': '''Different promotions dan menu highlights based on time of day untuk optimize 
-        traffic throughout operational hours. Encourage visits during off-peak hours dengan attractive 
-        offers. Match offerings dengan customer needs at different times - quick lunch, afternoon 
-        tea, happy hour, late night snacks. Maximize utilization dan revenue per hour.''',
+        'description': '''Program promosi dan penawaran menu yang disesuaikan dengan waktu kunjungan untuk 
+        mengoptimalkan lalu lintas pelanggan sepanjang jam operasional. Bertujuan mendorong kunjungan 
+        pada jam sepi melalui penawaran menarik. Menu dan promo disesuaikan dengan kebutuhan pelanggan 
+        di berbagai waktu, seperti makan siang cepat, waktu santai sore, happy hour, dan camilan malam. 
+        Pendekatan ini memaksimalkan pemanfaatan waktu operasional dan pendapatan per jam.''',
         'implementation': [
-            'Lunch rush (11:00-14:00): express lunch sets Rp 35k dengan 15-min guarantee',
-            'Afternoon delight (14:00-17:00): 30% off all desserts dan coffees',
-            'Happy hour (17:00-19:00): buy 1 get 1 selected drinks dan appetizers',
-            'Dinner prime (19:00-21:00): premium menu availability, no discount',
-            'Late night (21:00-23:00): light bites menu, bar atmosphere, 20% off food',
-            'Weekday lunch: business lunch set dengan quick service',
-            'Weekend brunch: special expanded menu dengan bottomless drinks option',
-            'Early bird dinner: 25% off untuk seated before 18:00',
-            'Time-limited offers: flash deals pushed via app untuk fill slow hours',
-            'Meal period packages: different set menus untuk breakfast/lunch/dinner'
+            'Lunch rush (11.00–14.00): paket makan siang ekspres Rp 35k dengan jaminan 15 menit',
+            'Afternoon delight (14.00–17.00): diskon 30% untuk semua dessert dan kopi',
+            'Happy hour (17.00–19.00): beli 1 gratis 1 untuk minuman dan appetizer tertentu',
+            'Dinner prime (19.00–21.00): menu premium tanpa diskon',
+            'Late night (21.00–23.00): menu ringan dengan diskon makanan 20%',
+            'Weekday lunch: paket makan siang bisnis dengan layanan cepat',
+            'Weekend brunch: menu khusus akhir pekan dengan opsi minuman bebas',
+            'Early bird dinner: diskon 25% untuk pelanggan sebelum pukul 18.00',
+            'Time-limited offers: promo kilat via aplikasi untuk mengisi jam sepi',
+            'Meal period packages: paket menu berbeda untuk sarapan, makan siang, dan makan malam'
         ]
     },
-    
+
     "I4: Seasonal Event Menus": {
         'features': {
             'DiningOccasion': 0.25,
@@ -1560,24 +1566,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'ServiceRating': 0.02,
             'Age': 0.00
         },
-        'description': '''Limited-time special menus untuk seasonal events dan holidays (Ramadan, Christmas, 
-        Chinese New Year, Valentine, etc). Create excitement dan urgency dengan exclusive offerings 
-        that celebrate the occasion. Strong cultural relevance drives traffic dan creates memorable 
-        associations. Premium pricing acceptable untuk limited-time exclusive items.''',
+        'description': '''Menu spesial terbatas untuk acara musiman dan hari besar seperti Ramadan, Natal, 
+        Tahun Baru Imlek, dan Valentine. Program ini menciptakan antusiasme dan rasa urgensi melalui 
+        penawaran eksklusif yang relevan dengan momen perayaan. Keterkaitan budaya yang kuat mendorong 
+        peningkatan kunjungan dan menciptakan pengalaman yang berkesan. Harga premium dapat diterima 
+        karena sifat menu yang terbatas dan eksklusif.''',
         'implementation': [
-            'Ramadan: Iftar buffet packages, Sahur specials, pre-order for family gatherings',
-            'Christmas: festive set menus, turkey/ham options, Christmas decorations',
-            'Chinese New Year: prosperity menu, lo hei, auspicious dishes',
-            'Valentine: romantic dinners, couple packages, heart-themed presentations',
-            'Halloween: themed menu items, spooky presentations, costume contest',
-            'Independence Day: Indonesian traditional feast, national theme decorations',
-            'Mother\'s/Father\'s Day: family packages dengan special honors',
-            'New Year: countdown party packages, special celebration menu',
-            'Limited availability: create urgency "Only available this month!"',
-            'Pre-booking: accept advance reservations dengan deposit untuk peak days'
+            'Ramadan: paket buka puasa, menu sahur, dan pre-order untuk keluarga',
+            'Christmas: set menu festif dengan hidangan khas dan dekorasi Natal',
+            'Chinese New Year: menu kemakmuran, lo hei, dan hidangan simbolis',
+            'Valentine: makan malam romantis dan paket pasangan bertema khusus',
+            'Halloween: menu tematik dan presentasi unik serta lomba kostum',
+            'Independence Day: sajian khas Indonesia dengan dekorasi nasional',
+            'Mother\'s/Father\'s Day: paket keluarga dengan penghargaan khusus',
+            'New Year: paket pesta hitung mundur dan menu perayaan',
+            'Limited availability: penekanan eksklusivitas “hanya tersedia bulan ini”',
+            'Pre-booking: reservasi awal dengan deposit untuk hari puncak'
         ]
     },
-    
+
     "I5: Happy Hour Extended": {
         'features': {
             'TimeOfVisit': 0.30,
@@ -1591,23 +1598,25 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'OnlineUser': 0.01,
             'ServiceRating': 0.00
         },
-        'description': '''Extended happy hour program particularly pada Fridays untuk capture after-work 
-        crowd dan kick-start weekend vibe. Mix of food dan beverage promotions dengan lively atmosphere. 
-        Target young professionals dan friends groups looking untuk unwind. Balance discounts dengan 
-        volume untuk maintain profitability. Creates regular habit dan weekly traffic spike.''',
+        'description': '''Program happy hour yang diperpanjang, khususnya pada hari Jumat, untuk menarik 
+        pelanggan setelah jam kerja dan membangun suasana akhir pekan. Menggabungkan promosi makanan 
+        dan minuman dengan atmosfer yang hidup. Menargetkan profesional muda dan kelompok teman yang 
+        ingin bersantai. Diskon diseimbangkan dengan volume penjualan untuk menjaga profitabilitas serta 
+        membentuk kebiasaan kunjungan rutin mingguan.''',
         'implementation': [
-            'Friday extended: 15:00-21:00 happy hour (normal days 17:00-19:00)',
-            'Buy 1 Get 1: all drinks dan selected appetizers',
-            'Draft beer tower: special pricing untuk beer towers untuk sharing',
-            'Snack platters: mixed appetizer platters at 40% off',
-            'Live DJ: music dari 18:00 untuk party atmosphere',
-            'Reserved sections: group-friendly seating arrangement',
-            'Game zones: darts, board games untuk entertainment',
-            'Social hours: networking-friendly environment untuk young professionals',
-            'Punch cards: collect stamps during happy hour untuk rewards',
-            'Extended seating: no time pressure, enjoy as long as wanted'
+            'Friday extended: happy hour pukul 15.00–21.00 (hari biasa 17.00–19.00)',
+            'Buy 1 Get 1: semua minuman dan appetizer tertentu',
+            'Draft beer tower: harga spesial untuk minuman berbagi',
+            'Snack platters: paket camilan campuran dengan diskon 40%',
+            'Live DJ: musik mulai pukul 18.00 untuk suasana pesta',
+            'Reserved sections: area duduk ramah kelompok',
+            'Game zones: area permainan seperti darts dan board games',
+            'Social hours: suasana ramah networking untuk profesional muda',
+            'Punch cards: kartu stempel happy hour untuk hadiah',
+            'Extended seating: waktu duduk fleksibel tanpa tekanan waktu'
         ]
     },
+
 
     # ========== J. STRATEGI BERBASIS FITUR INTERAKSI ==========
     
@@ -1624,25 +1633,26 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'Spend_x_Rating': 0.01,
             'FrequentVisitor': 0.00
         },
-        'description': '''Premium recognition program untuk most loyal customers dengan highest satisfaction 
-        ratings. These are brand ambassadors yang deserve special treatment. Personalized service, 
-        exclusive perks, dan public recognition. Hand-picked members based on loyalty score combining 
-        frequency, ratings, spending, dan tenure. Ultra-VIP treatment untuk retain dan delight these 
-        valuable customers.''',
+        'description': '''Program apresiasi premium bagi pelanggan paling loyal dengan tingkat kepuasan 
+        tertinggi. Pelanggan dalam segmen ini berperan sebagai duta merek yang layak mendapatkan 
+        perlakuan istimewa. Program mencakup layanan yang dipersonalisasi, keuntungan eksklusif, dan 
+        bentuk pengakuan khusus. Anggota dipilih secara selektif berdasarkan skor loyalitas yang 
+        menggabungkan frekuensi kunjungan, rating, nilai transaksi, dan durasi loyalitas. Pendekatan 
+        ultra-VIP ini bertujuan mempertahankan serta meningkatkan kepuasan pelanggan bernilai tinggi.''',
         'implementation': [
-            'VIP identification: top 50 customers identified quarterly based on loyalty metrics',
-            'Personal greeting: staff know them by name, preferences memorized',
-            'Surprise delights: random complimentary upgrades, desserts, drinks',
-            'Birthday celebration: elaborate celebration dengan free premium meal',
-            'Anniversary recognition: celebrate their loyalty anniversary',
-            'Priority everything: reservations, seating, service, special requests',
-            'Exclusive events: quarterly VIP-only events dengan chef, owner',
-            'Behind scenes: kitchen tours, recipe sharing, cooking classes',
-            'First taste: preview new menu items sebelum public launch',
-            'Personal concierge: direct line untuk special requests, catering'
+            'VIP identification: 50 pelanggan teratas diidentifikasi setiap kuartal berdasarkan metrik loyalitas',
+            'Personal greeting: staf mengenal pelanggan secara personal beserta preferensinya',
+            'Surprise delights: peningkatan layanan, dessert, atau minuman gratis secara acak',
+            'Birthday celebration: perayaan ulang tahun dengan hidangan premium gratis',
+            'Anniversary recognition: perayaan hari jadi loyalitas pelanggan',
+            'Priority everything: prioritas reservasi, tempat duduk, layanan, dan permintaan khusus',
+            'Exclusive events: acara khusus VIP setiap kuartal bersama chef atau pemilik',
+            'Behind the scenes: tur dapur, berbagi resep, atau kelas memasak',
+            'First taste: mencicipi menu baru sebelum diluncurkan ke publik',
+            'Personal concierge: jalur komunikasi langsung untuk permintaan khusus atau katering'
         ]
     },
-    
+
     "J2: Service Recovery Program": {
         'features': {
             'Spend_x_Rating': 0.25,
@@ -1656,25 +1666,28 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'AmbianceRating': 0.02,
             'RatingRange': 0.00
         },
-        'description': '''Proactive system untuk identify dan recover customers who had negative experience 
-        (indicated by drop in ratings). Immediate intervention untuk turn bad experience into positive 
-        one. Statistics show customers whose complaints are resolved well become more loyal than those 
-        who never complained. Critical untuk prevent churn dan rebuild trust.''',
+        'description': '''Sistem proaktif untuk mengidentifikasi dan memulihkan pengalaman pelanggan yang 
+        mengalami ketidakpuasan, yang ditunjukkan oleh penurunan rating. Intervensi dilakukan secara 
+        cepat untuk mengubah pengalaman negatif menjadi positif. Studi menunjukkan bahwa pelanggan 
+        yang keluhannya ditangani dengan baik cenderung menjadi lebih loyal dibandingkan pelanggan 
+        yang tidak pernah mengeluh. Program ini krusial untuk mencegah churn dan membangun kembali 
+        kepercayaan pelanggan.''',
         'implementation': [
-            'Automated alerts: management notified instantly untuk ratings < 3 stars',
-            'Immediate response: personal call/message within 24 hours',
-            'Sincere apology: acknowledge issue without making excuses dan tunjukkan empati.',
-            'Root cause investigation: understand exactly what went wrong (e.g., staff training issue, supply chain).',
-            '**Kompensasi Proporsional:** Menawarkan kompensasi yang sepadan dengan kerugian (misalnya, free dessert untuk minor issue, full complimentary meal untuk major issue).',
-            '**Follow-up:** Mengirimkan survey *follow-up* singkat 7 hari setelah *recovery* untuk memastikan kepuasan.',
-            '**Preventive Action:** Menggunakan data dari keluhan yang diselesaikan untuk memperbarui SOP (Standard Operating Procedure) internal.'
+            'Automated alerts: manajemen menerima notifikasi instan untuk rating di bawah 3 bintang',
+            'Immediate response: kontak personal melalui telepon atau pesan dalam waktu 24 jam',
+            'Sincere apology: pengakuan kesalahan tanpa alasan defensif serta menunjukkan empati',
+            'Root cause investigation: identifikasi penyebab utama masalah (misalnya pelatihan staf atau rantai pasok)',
+            'Kompensasi proporsional: kompensasi sesuai tingkat masalah (dessert gratis hingga makan gratis penuh)',
+            'Follow-up: survei singkat dikirim 7 hari setelah pemulihan untuk memastikan kepuasan',
+            'Preventive action: temuan keluhan digunakan untuk memperbarui SOP internal'
         ]
     },
+
     "J3: High-Value Retention Perks": {
         'features': {
-            'AverageSpend': 0.35,  # Fokus utama
-            'Rating_x_Spend': 0.25, # Interaksi spend vs rating yang rendah
-            'RatingStd': 0.15,     # Konsistensi yang buruk
+            'AverageSpend': 0.35,
+            'Rating_x_Spend': 0.25,
+            'RatingStd': 0.15,
             'LoyalCustomer': 0.10,
             'VisitFrequency': 0.05,
             'ServiceRating': 0.04,
@@ -1683,25 +1696,26 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'AmbianceRating': 0.01,
             'RatingRange': 0.00
         },
-        'description': '''Strategi retensi yang sangat terfokus pada pelanggan yang memiliki riwayat 
-        pembelanjaan tinggi (High-Spender) namun menunjukkan rating kepuasan yang rendah atau tidak konsisten. 
-        Tujuan utamanya adalah menenangkan kekecewaan secara cepat, mencegah churn dari segmen pendapatan 
-        kritis ini, dan membangun kembali hubungan melalui kompensasi premium yang proporsional dengan 
-        nilai mereka. Ini adalah asuransi untuk pendapatan masa depan.''',
+        'description': '''Strategi retensi yang berfokus pada pelanggan dengan nilai transaksi tinggi namun 
+        menunjukkan tingkat kepuasan yang rendah atau tidak konsisten. Tujuan utama strategi ini adalah 
+        meredam kekecewaan secara cepat, mencegah kehilangan pelanggan dari segmen pendapatan yang kritis, 
+        serta membangun kembali hubungan melalui kompensasi premium yang sepadan dengan nilai pelanggan. 
+        Pendekatan ini berfungsi sebagai perlindungan terhadap pendapatan jangka panjang.''',
         'implementation': [
-            'High-Spender Identification: Segmentasi pelanggan yang masuk kuartil atas AverageSpend (>Q3) tetapi memiliki AvgRating < 3.5.',
-            'Targeted Offer: Mengirimkan kompensasi yang bernilai tinggi (misalnya, free premium meal atau diskon 50% pada kunjungan berikutnya).',
-            'Feedback Loop: Manajer secara pribadi menghubungi untuk mendapatkan *feedback* mendalam mengenai pengalaman negatif mereka.',
-            'Dedicated Service Channel: Memberikan jalur komunikasi prioritas untuk keluhan berikutnya.',
-            'Proactive Check-in: Manajer melakukan *follow-up* personal pada kunjungan mereka berikutnya.'
+            'High-Spender identification: segmentasi pelanggan pada kuartil atas AverageSpend (>Q3) dengan AvgRating < 3.5',
+            'Targeted offer: kompensasi bernilai tinggi seperti hidangan premium gratis atau diskon 50% kunjungan berikutnya',
+            'Feedback loop: manajer menghubungi pelanggan secara personal untuk menggali masukan mendalam',
+            'Dedicated service channel: jalur komunikasi prioritas untuk penanganan keluhan berikutnya',
+            'Proactive check-in: tindak lanjut personal oleh manajer pada kunjungan selanjutnya'
         ]
     },
+
     "J4: Fast-Track Positif Loyalty": {
         'features': {
-            'VisitFrequency': 0.30, # Sering datang
-            'ServiceRating': 0.25,  # Sering memberi rating bagus (terutama service)
+            'VisitFrequency': 0.30,
+            'ServiceRating': 0.25,
             'LoyaltyProgramMember': 0.15,
-            'Rating_x_Frequency': 0.12, # Interaksi positif yang sering
+            'Rating_x_Frequency': 0.12,
             'FoodRating': 0.08,
             'AmbianceRating': 0.05,
             'AvgRating': 0.03,
@@ -1709,19 +1723,20 @@ def get_strategy_feature_mapping() -> Dict[str, Dict]:
             'AverageSpend': 0.01,
             'Spend_x_Rating': 0.00
         },
-        'description': '''Menciptakan jalur cepat (Fast-Track) ke level loyalitas yang lebih tinggi bagi pelanggan 
-        yang menunjukkan frekuensi kunjungan tinggi dan secara konsisten memberikan rating positif (4 atau 5 bintang). 
-        Tujuan strategi ini adalah mempercepat konversi mereka menjadi advokat merek dan memastikan mereka 
-        merasa dihargai atas loyalitas dan *feedback* positif yang mereka berikan. Ini mendorong lingkaran 
-        positif antara *feedback* dan *reward*.''',
+        'description': '''Strategi jalur cepat menuju tingkat loyalitas yang lebih tinggi bagi pelanggan 
+        dengan frekuensi kunjungan tinggi dan rating positif yang konsisten. Tujuan program ini adalah 
+        mempercepat konversi pelanggan menjadi advokat merek serta memastikan mereka merasa dihargai 
+        atas loyalitas dan umpan balik positif yang diberikan. Pendekatan ini mendorong siklus positif 
+        antara pemberian feedback dan penghargaan.''',
         'implementation': [
-            'Fast-Track Criteria: Pelanggan yang mencapai X kunjungan dalam Y bulan DAN memiliki AvgRating > 4.5 akan secara otomatis dinaikkan satu tingkat loyalitas (Tier Upgrade).',
-            'Public Thank You: Memberikan shout-out atau ucapan terima kasih publik di platform media sosial mereka (dengan izin).',
-            'Badge of Honor: Memberikan lencana digital atau *physical badge* yang menandakan status "Positive Advocate".',
-            'Early Access: Memberi akses awal ke sistem reservasi atau promo musiman.',
-            'Survey Reward: Hadiah kecil yang terikat dengan survey pasca-kunjungan untuk mendorong *feedback* positif yang berkelanjutan.'
-            ]
-        }
+            'Fast-track criteria: pelanggan dengan X kunjungan dalam Y bulan dan AvgRating > 4.5 otomatis naik satu tingkat loyalitas',
+            'Public thank you: ucapan terima kasih publik di media sosial pelanggan (dengan izin)',
+            'Badge of honor: pemberian lencana digital atau fisik sebagai "Positive Advocate"',
+            'Early access: akses awal ke reservasi atau promo musiman',
+            'Survey reward: hadiah kecil yang terhubung dengan survei pasca-kunjungan'
+        ]
+    }
+
     }
 
 def map_dataset_to_features(df: pd.DataFrame, 
