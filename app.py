@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
 
-from topsis_utils import calculate_topsis
-from data_mapping import (
+from DSS.DSSFinalProject.topsis_utils import calculate_topsis
+from DSS.DSSFinalProject.data_mapping import (
     load_model_features,
     get_feature_metadata,
     get_strategy_feature_mapping,
     map_dataset_to_features,
     build_topsis_matrix
 )
-from ui_components import (
+from DSS.DSSFinalProject.ui_components import (
     set_page_style,
     show_progress_indicator,
     create_metric_card,
