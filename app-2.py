@@ -2167,56 +2167,67 @@ def create_metric_card(label, value, delta=None, icon="📊"):
     """, unsafe_allow_html=True)
 
 def show_user_guide():
-    """Tampilkan panduan pengguna"""
     st.markdown("""
-    <div style='background: white; padding: 30px; border-radius: 15px; 
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
-        <h2 style='color: #667eea; margin-bottom: 20px;'>📖 Panduan Penggunaan</h2>
-        
-        <h3 style='color: #764ba2;'>🎯 Apa itu Sistem Rekomendasi Strategi?</h3>
-        <p style='color: #4b5563; line-height: 1.6;'>
-        Sistem ini menganalisis data pelanggan restoran Anda dan memberikan rekomendasi strategi 
-        bisnis terbaik menggunakan metode <strong>TOPSIS (Technique for Order of Preference by 
-        Similarity to Ideal Solution)</strong> yang dikombinasikan dengan Machine Learning.
-        </p>
-        
-        <h3 style='color: #764ba2; margin-top: 30px;'>📋 Langkah-langkah Penggunaan</h3>
-        <ol style='color: #4b5563; line-height: 2;'>
-            <li><strong>Upload Dataset:</strong> Siapkan file CSV dengan data pelanggan Anda</li>
-            <li><strong>Mapping Otomatis:</strong> Sistem akan mencocokkan kolom dataset dengan features model</li>
-            <li><strong>Analisis Feature:</strong> Lihat feature mana yang paling berpengaruh</li>
-            <li><strong>Rekomendasi Strategi:</strong> Dapatkan ranking strategi terbaik untuk bisnis Anda</li>
-            <li><strong>Export Hasil:</strong> Download hasil analisis untuk dokumentasi</li>
-        </ol>
-        
-        <h3 style='color: #764ba2; margin-top: 30px;'>📊 Format Data yang Diperlukan</h3>
-        <p style='color: #4b5563; line-height: 1.6;'>
-        Dataset Anda harus berbentuk CSV dengan kolom-kolom seperti:
-        </p>
-        <ul style='color: #4b5563; line-height: 1.8;'>
-            <li><strong>Rating:</strong> ServiceRating, FoodRating, AmbianceRating</li>
-            <li><strong>Kunjungan:</strong> VisitFrequency, AverageSpend, GroupSize</li>
-            <li><strong>Demografi:</strong> Age, Gender, Income</li>
-            <li><strong>Status:</strong> LoyaltyProgramMember, OnlineReservation</li>
-        </ul>
-        
-        <h3 style='color: #764ba2; margin-top: 30px;'>💡 Tips</h3>
-        <ul style='color: #4b5563; line-height: 1.8;'>
-            <li>Pastikan data Anda bersih dan tidak ada missing values yang banyak</li>
-            <li>Minimal 5 kolom yang match dengan features model</li>
-            <li>Gunakan nama kolom yang standar (ServiceRating, WaitTime, dll)</li>
-            <li>Sistem akan otomatis mendeteksi sinonim (misal: "Rating Service" = "ServiceRating")</li>
-        </ul>
-        
-        <div style='background: #f0f9ff; padding: 15px; border-radius: 8px; 
-                    border-left: 4px solid #667eea; margin-top: 30px;'>
-            <strong style='color: #667eea;'>💬 Butuh Bantuan?</strong><br>
-            <span style='color: #4b5563;'>
-            Jika mengalami kesulitan, pastikan format data Anda sudah sesuai dengan contoh yang diberikan.
-            </span>
-        </div>
+    <div style="
+        background:white;
+        color:#374151;
+        padding:32px;
+        border-radius:16px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        line-height:1.8;
+    ">
+
+    <div style="margin-bottom:20px;">
+        <span style="font-size:28px; font-weight:700; color:#667eea;">
+            📖 Panduan Penggunaan
+        </span>
+    </div>
+
+    <p>
+        Sistem Rekomendasi Strategi Restoran merupakan aplikasi berbasis web
+        yang digunakan untuk menganalisis data pelanggan dan menghasilkan
+        rekomendasi strategi bisnis menggunakan kombinasi
+        <strong>Machine Learning</strong> dan metode
+        <strong>TOPSIS (Technique for Order Preference by Similarity to Ideal Solution)</strong>.
+    </p>
+
+    <hr style="margin:24px 0;">
+
+    <strong>Langkah-langkah Penggunaan:</strong>
+    <ol>
+        <li>Pengguna mengunggah dataset pelanggan restoran dalam format CSV</li>
+        <li>Sistem melakukan pemetaan kolom dataset secara otomatis</li>
+        <li>Data dianalisis menggunakan model dan metode TOPSIS</li>
+        <li>Hasil rekomendasi strategi ditampilkan dalam bentuk peringkat</li>
+        <li>Pengguna dapat mengunduh hasil analisis</li>
+    </ol>
+
+    <hr style="margin:24px 0;">
+
+    <strong>Format Data yang Disarankan:</strong>
+    <ul>
+        <li>Rating layanan, makanan, dan suasana restoran</li>
+        <li>Frekuensi kunjungan dan rata-rata pengeluaran pelanggan</li>
+        <li>Data demografi seperti usia dan pendapatan</li>
+        <li>Status loyalitas dan reservasi online</li>
+    </ul>
+
+    <div style="
+        background:#f0f9ff;
+        padding:16px;
+        border-radius:8px;
+        border-left:4px solid #667eea;
+        margin-top:24px;
+    ">
+        <strong>Catatan:</strong><br>
+        Sistem bersifat fleksibel dan dapat menyesuaikan dataset dengan
+        struktur kolom yang berbeda melalui proses mapping.
+    </div>
+
     </div>
     """, unsafe_allow_html=True)
+
+
 
 def show_summary_stats(df, num_matched, total_features):
     """Tampilkan summary statistics dalam card"""
@@ -2234,6 +2245,71 @@ def show_summary_stats(df, num_matched, total_features):
     with col4:
         match_pct = (num_matched / total_features * 100)
         create_metric_card("Match Rate", f"{match_pct:.0f}%", icon="🎯")
+
+def show_about():
+    st.markdown("""
+    <div style="
+        background:white;
+        color:#374151;
+        padding:36px;
+        border-radius:16px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        line-height:1.8;
+    ">
+
+    <div style="margin-bottom:20px;">
+        <span style="font-size:28px; font-weight:700; color:#667eea;">
+            ℹ️ Tentang Sistem
+        </span>
+    </div>
+
+    <p>
+        Sistem Rekomendasi Strategi Restoran dikembangkan sebagai sistem pendukung
+        keputusan (Decision Support System) untuk membantu pemilik dan manajer
+        restoran dalam menentukan strategi bisnis berbasis data pelanggan.
+    </p>
+
+    <hr style="margin:24px 0;">
+
+    <strong>Tujuan Pengembangan:</strong>
+    <ul>
+        <li>Mendukung pengambilan keputusan yang objektif dan terukur</li>
+        <li>Meningkatkan kepuasan dan loyalitas pelanggan</li>
+        <li>Mengoptimalkan strategi pengembangan restoran</li>
+    </ul>
+
+    <hr style="margin:24px 0;">
+
+    <strong>Metodologi:</strong>
+    <ul>
+        <li>Machine Learning untuk analisis pola kepuasan pelanggan</li>
+        <li>TOPSIS sebagai metode pengambilan keputusan multikriteria</li>
+        <li>Pemetaan kolom otomatis untuk fleksibilitas dataset</li>
+    </ul>
+
+    <hr style="margin:24px 0;">
+
+    <strong>Teknologi yang Digunakan:</strong>
+    <p>
+        Python, Streamlit, Scikit-learn, Pandas, NumPy, dan Plotly
+    </p>
+
+    <div style="
+        margin-top:32px;
+        padding-top:16px;
+        border-top:1px solid #e5e7eb;
+        color:#9ca3af;
+        font-size:14px;
+        text-align:center;
+    ">
+        Restaurant Strategy Recommendation System<br>
+        Version 2.0
+    </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
 
 # ==============================================================================
 # APLIKASI STREAMLIT - ENHANCED VERSION
@@ -2979,94 +3055,8 @@ def main():
     # ABOUT PAGE
     # ==============================================================================
     elif page == "ℹ️ About":
-        st.markdown("""
-        <div style='text-align: center; padding: 40px 0;'>
-            <h1 style='font-size: 48px;'>ℹ️ About</h1>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div style='background: white; padding: 40px; border-radius: 15px; 
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
-            
-            <h2 style='color: #667eea;'>🍽️ Tentang Sistem Ini</h2>
-            
-            <p style='color: #4b5563; line-height: 1.8; font-size: 16px;'>
-                <strong>Sistem Rekomendasi Strategi Restoran</strong> adalah aplikasi berbasis web yang 
-                menggunakan kombinasi <strong>Machine Learning</strong> dan metode pengambilan keputusan 
-                multi-kriteria <strong>TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)</strong> 
-                untuk memberikan rekomendasi strategi bisnis yang tepat bagi restoran Anda.
-            </p>
-            
-            <h3 style='color: #764ba2; margin-top: 40px;'>🎯 Tujuan</h3>
-            <p style='color: #4b5563; line-height: 1.8;'>
-                Membantu pemilik dan manajer restoran dalam mengambil keputusan strategis berdasarkan 
-                data pelanggan yang objektif, sehingga dapat meningkatkan kepuasan pelanggan dan 
-                pertumbuhan bisnis.
-            </p>
-            
-            <h3 style='color: #764ba2; margin-top: 40px;'>🔬 Metodologi</h3>
-            <ul style='color: #4b5563; line-height: 2;'>
-                <li><strong>Machine Learning:</strong> Model Random Forest untuk analisis feature importance</li>
-                <li><strong>TOPSIS:</strong> Metode pengambilan keputusan multi-kriteria</li>
-                <li><strong>Smart Mapping:</strong> Algoritma pencocokan kolom otomatis dengan fuzzy matching</li>
-                <li><strong>Data-Driven:</strong> Rekomendasi berdasarkan pola data pelanggan aktual</li>
-            </ul>
-            
-            <h3 style='color: #764ba2; margin-top: 40px;'>✨ Fitur Utama</h3>
-            <ul style='color: #4b5563; line-height: 2;'>
-                <li>📤 Upload dataset pelanggan (format CSV)</li>
-                <li>🔗 Mapping otomatis kolom dataset ke features model</li>
-                <li>📊 Analisis feature importance dengan visualisasi interaktif</li>
-                <li>🎯 Ranking strategi bisnis menggunakan TOPSIS</li>
-                <li>💡 Rekomendasi top 3 strategi dengan langkah implementasi detail</li>
-                <li>💾 Export hasil analisis dalam format CSV</li>
-            </ul>
-            
-            <h3 style='color: #764ba2; margin-top: 40px;'>🛠️ Teknologi</h3>
-            <div style='display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;'>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>Python</span>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>Streamlit</span>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>Scikit-learn</span>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>Pandas</span>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>Plotly</span>
-                <span style='background: #f0f9ff; color: #667eea; padding: 10px 20px; 
-                            border-radius: 20px; font-weight: bold;'>NumPy</span>
-            </div>
-            
-            <h3 style='color: #764ba2; margin-top: 40px;'>📚 Referensi</h3>
-            <p style='color: #4b5563; line-height: 1.8;'>
-                Sistem ini dikembangkan berdasarkan penelitian dan best practices dalam bidang:
-            </p>
-            <ul style='color: #4b5563; line-height: 2;'>
-                <li>Customer Analytics & Behavior Prediction</li>
-                <li>Multi-Criteria Decision Making (MCDM)</li>
-                <li>Restaurant Business Strategy</li>
-                <li>Machine Learning for Business Intelligence</li>
-            </ul>
-            
-            <div style='background: #f0f9ff; padding: 25px; border-radius: 10px; 
-                        border-left: 5px solid #667eea; margin-top: 40px;'>
-                <h4 style='color: #667eea; margin-top: 0;'>💬 Feedback & Support</h4>
-                <p style='color: #4b5563; margin-bottom: 0;'>
-                    Jika Anda memiliki pertanyaan, saran, atau menemukan bug, silakan hubungi tim 
-                    pengembang atau buat issue di repository GitHub kami.
-                </p>
-            </div>
-            
-            <div style='text-align: center; margin-top: 40px; padding-top: 30px; 
-                        border-top: 2px solid #e5e7eb;'>
-                <p style='color: #9ca3af; font-size: 14px;'>
-                    Version 2.0.0 | © 2024 Restaurant Strategy Recommendation System
-                </p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        show_about()
 
 if __name__ == '__main__':
     main()
