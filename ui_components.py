@@ -158,9 +158,9 @@ def create_metric_card(label, value, delta=None):
     st.markdown(
         f"""
         <div style="
-            background:#ffffff;
+            background: #ffffff;
             padding:18px 20px;
-            border-radius:14px;
+            border-radius: 14px;
             text-align:center;
             border-top:5px solid #ffc20f;
             box-shadow:0 4px 10px rgba(0,0,0,0.12);
